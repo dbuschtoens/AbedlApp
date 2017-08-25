@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="example.abedl.app" version="0.1.0">
+  <name>Abedl App</name>
+  <description>
+    Example Tabris.js App
+  </description>
+  <author email="function () {
+  var email = emailCache[process.cwd()];
+
+  if (email) {
+    return email;
+  }
+
+  if (shell.which(&#39;git&#39;)) {
+    email = shell.exec(&#39;git config --get user.email&#39;, {silent: true}).stdout.trim();
+    emailCache[process.cwd()] = email;
+  }
+
+  return email;
+}">
+    function () {
+  var name = nameCache[process.cwd()];
+
+  if (name) {
+    return name;
+  }
+
+  if (shell.which(&#39;git&#39;)) {
+    name = shell.exec(&#39;git config --get user.name&#39;, {silent: true}).stdout.trim();
+    nameCache[process.cwd()] = name;
+  }
+
+  return name;
+}
+  </author>
+  <preference name="EnableDeveloperConsole" value="$IS_DEBUG" />
+</widget>

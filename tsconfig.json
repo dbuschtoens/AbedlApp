@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "outDir": "./dist/",
+    "lib": ["es6", "es2015.promise" ],
+    "jsx": "react",
+    "jsxFactory": "JSX.createElement",
+    "strict": true,
+    "strictNullChecks": true
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./src/**/*.tsx"
+  ]
+}
