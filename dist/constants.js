@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.HIGHLIGHT_COLOR = '#FF9800';
+exports.FADED_HIGHLIGHT_COLOR = '#ffc46d';
+exports.LIST_ELEMENT_COLOR = '#4a4a4a';
+exports.LIST_SUBELEMENT_COLOR = '#7b7b7b';
+exports.LIGHT_GRAY_COLOR = '#dbdbdb';
+exports.TEXT_BUTTON_BACKGROUND = '#f7f7f7';
+exports.LIST_ELEMENT_FONT = 'bold 20px';
+exports.LIST_SUBELEMENT_FONT = 'bold 17px';
