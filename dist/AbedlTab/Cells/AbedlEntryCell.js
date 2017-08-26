@@ -24,15 +24,15 @@ class AbedlEntryCell extends tabris_1.Composite {
                 }
             });
         }
-        // this.saveButton = new TextView({
-        //   layoutData: { centerY: 0, left: [this.textView, SUB_MARGIN], right: 0 },
-        //   text: SAVE_ICON, font: '20px', highlightOnTouch: true, alignment: 'left'
-        // }).on({
-        //   tap: () => {
-        //     this.saveCallback(this.section, this.contentIndex);
-        //     this.saveButton.visible = false;
-        //   }
-        // }).appendTo(this);
+        this.saveButton = new tabris_1.TextView({
+            layoutData: { centerY: 0, left: [this.textView, SUB_MARGIN], right: 0 },
+            text: SAVE_ICON, font: '20px', highlightOnTouch: true, alignment: 'left'
+        }).on({
+            tap: () => {
+                this.saveCallback(this.section, this.contentIndex);
+                this.saveButton.visible = false;
+            }
+        }).appendTo(this);
     }
     set(arg1, value) {
         if (typeof arg1 === 'string') {
@@ -43,11 +43,16 @@ class AbedlEntryCell extends tabris_1.Composite {
             this.section = descriptor.abedlIndex;
             this.contentIndex = descriptor.contentIndex || 0;
             this.textView.set(util_1.omit(arg1, 'descriptor'));
+            this.saveButton.visible = !!arg1.buttonVisible;
         }
         return this;
     }
     onLongpress(callback) {
         this.callback = callback;
+        return this;
+    }
+    onSavePressed(callback) {
+        this.saveCallback = callback;
         return this;
     }
 }

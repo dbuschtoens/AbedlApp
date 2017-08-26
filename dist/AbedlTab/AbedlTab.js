@@ -113,7 +113,9 @@ class AbedlTab extends tabris_1.Tab {
                 return new SectionHeadingCell_1.default().onAddButton((section) => this.showAddContentOverlay(section));
             case CONTENT:
             case NOTE:
-                return new AbedlEntryCell_1.default().onLongpress((section, index) => this.showContextDialog(section, index));
+                return new AbedlEntryCell_1.default()
+                    .onSavePressed((section, index) => this.saveAbedlEntry(section, index))
+                    .onLongpress((section, index) => this.showContextDialog(section, index));
             case DIVIDER:
                 return new Divider();
             default:
@@ -155,10 +157,11 @@ class AbedlTab extends tabris_1.Tab {
             let entry = PatientData_1.getEntries(this.patient.abedlTable, descriptor.abedlIndex)[descriptor.contentIndex];
             let inDatabase = (PatientData_1.getEntries(app_1.globalDataObject.abedlEntries, descriptor.abedlIndex).indexOf(entry)) !== -1;
             cell.set({
-                layoutData: { left: 20, right: 20 },
+                layoutData: { left: 20, right: 40 },
                 descriptor,
                 text: entry,
                 textColor: inDatabase ? constants_1.LIST_SUBELEMENT_COLOR : 'black',
+                buttonVisible: !inDatabase,
                 font: '14px'
             });
         }
@@ -172,23 +175,23 @@ class AbedlTab extends tabris_1.Tab {
         let entry = PatientData_1.getEntries(this.patient.abedlTable, section)[index];
         let inDatabase = (PatientData_1.getEntries(app_1.globalDataObject.abedlEntries, section).indexOf(entry)) !== -1;
         let buttons = {
-            ok: 'Löschen',
-            neutral: 'Abbrechen',
+            ok: 'Ja',
+            cancel: 'Nein',
         };
         if (!inDatabase)
             buttons.cancel = 'in Datenbank';
         new tabris_1.AlertDialog({
-            title: 'Abedl Eintrag',
+            title: 'Abedl Eintrag Löschen?',
             message: entry,
             buttons
         }).on({
             closeOk: () => this.deleteAbedlEntry(section, index),
-            closeCancel: () => this.saveAbedlEntry(section, index)
         }).open();
     }
     saveAbedlEntry(section, index) {
         PatientData_1.getEntries(app_1.globalDataObject.abedlEntries, section).push(PatientData_1.getEntries(this.patient.abedlTable, section)[index]);
         app_1.storeData();
+        this.collectionView.refresh();
     }
     deleteAbedlEntry(section, index) {
         let entries = PatientData_1.getEntries(this.patient.abedlTable, section);

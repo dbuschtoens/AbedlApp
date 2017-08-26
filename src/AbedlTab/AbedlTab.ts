@@ -27,6 +27,7 @@ const ADD_ICON = '+';
 export interface AbedlCellProperties extends TextViewProperties {
   descriptor: CellDescriptor;
   text: string;
+  buttonVisible?: boolean;
 }
 
 export interface CellDescriptor {
@@ -145,7 +146,9 @@ export default class AbedlTab extends Tab {
         return new SectionHeadingCell().onAddButton((section) => this.showAddContentOverlay(section));
       case CONTENT:
       case NOTE:
-        return new AbedlEntryCell().onLongpress((section, index) => this.showContextDialog(section, index));
+        return new AbedlEntryCell()
+          .onSavePressed((section, index) => this.saveAbedlEntry(section, index))
+          .onLongpress((section, index) => this.showContextDialog(section, index));
       case DIVIDER:
         return new Divider();
       default:
@@ -186,10 +189,11 @@ export default class AbedlTab extends Tab {
       let entry = getEntries(this.patient.abedlTable, descriptor.abedlIndex)[descriptor.contentIndex!];
       let inDatabase = (getEntries(globalDataObject.abedlEntries, descriptor.abedlIndex).indexOf(entry)) !== -1;
       cell.set({
-        layoutData: { left: 20, right: 20 },
+        layoutData: { left: 20, right: 40 },
         descriptor,
         text: entry,
         textColor: inDatabase ? LIST_SUBELEMENT_COLOR : 'black',
+        buttonVisible : !inDatabase,
         font: '14px'
       });
     }
@@ -205,17 +209,16 @@ export default class AbedlTab extends Tab {
     let entry = getEntries(this.patient.abedlTable, section)[index];
     let inDatabase = (getEntries(globalDataObject.abedlEntries, section).indexOf(entry)) !== -1;
     let buttons: any = {
-      ok: 'Löschen',
-      neutral: 'Abbrechen',
+      ok: 'Ja',
+      cancel: 'Nein',
     };
     if (!inDatabase) buttons.cancel = 'in Datenbank';
     new AlertDialog({
-      title: 'Abedl Eintrag',
+      title: 'Abedl Eintrag Löschen?',
       message: entry,
       buttons
     }).on({
       closeOk: () => this.deleteAbedlEntry(section, index),
-      closeCancel: () => this.saveAbedlEntry(section, index)
     }).open();
   }
 
@@ -224,6 +227,7 @@ export default class AbedlTab extends Tab {
       getEntries(this.patient.abedlTable, section)[index]
     );
     storeData();
+    this.collectionView.refresh();
   }
 
   private deleteAbedlEntry(section: AbedlSectionIndex, index: number) {
