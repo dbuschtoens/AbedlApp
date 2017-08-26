@@ -30,10 +30,8 @@ export default class AbedlEntryCell extends Composite {
     } else {
 
       this.on({
-        longpress: ({ state }) => {
-          if (state !== 'end') {
+        tap: () => {
             this.callback(this.section, this.contentIndex);
-          }
         }
       });
     }
@@ -63,7 +61,7 @@ export default class AbedlEntryCell extends Composite {
     return this;
   }
 
-  public onLongpress(callback: (section: AbedlSectionIndex, index: number) => void) {
+  public onTapped(callback: (section: AbedlSectionIndex, index: number) => void) {
     this.callback = callback;
     return this;
   }

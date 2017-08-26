@@ -8,6 +8,7 @@ const util_1 = require("../util");
 const BIG_MARGIN = 20;
 const MARGIN = 10;
 const SMALL_MARGIN = 10;
+const SEND_ICON = '✔️';
 const LABEL_FONT = 'bold 18px';
 const ADD_FONT = 'bold 28px';
 const SELECTED_BUTTON_BACKGROUND = '#ffbb56';
@@ -258,7 +259,6 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
     }
 }
 exports.default = CreateMedicationOverlay;
-const SEND_ICON = '✔️';
 class AddTextWindow extends FloatingWindow_1.default {
     constructor(message) {
         super({ centerX: 0, centerY: 0, windowWidth: 0.9 });

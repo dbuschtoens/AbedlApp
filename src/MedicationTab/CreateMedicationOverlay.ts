@@ -8,6 +8,8 @@ import { omit } from "../util";
 const BIG_MARGIN = 20;
 const MARGIN = 10;
 const SMALL_MARGIN = 10;
+const SEND_ICON = '✔️'
+
 const LABEL_FONT = 'bold 18px';
 const ADD_FONT = 'bold 28px';
 const SELECTED_BUTTON_BACKGROUND = '#ffbb56'
@@ -315,7 +317,6 @@ export default class CreateMedicationOverlay extends FloatingWindow {
 
 }
 
-const SEND_ICON = '✔️'
 
 class AddTextWindow extends FloatingWindow {
 

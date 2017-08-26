@@ -9,6 +9,7 @@ const SectionHeadingCell_1 = require("./Cells/SectionHeadingCell");
 const AbedlEntryCell_1 = require("./Cells/AbedlEntryCell");
 const constants_1 = require("../constants");
 const ABEDLTexts_1 = require("../ABEDLTexts");
+const FloatingWindow_1 = require("../FloatingWindow");
 const CHAPTER_TITLE = 'chapterTitle';
 const SUBCHAPTER_TITLE = 'subChapterTitle';
 const HEADING = 'heading';
@@ -17,10 +18,13 @@ const CONTENT_HEADING = 'contentHeading';
 const DIVIDER = 'divider';
 const NOTES = 'notes';
 const NOTE = 'notes';
+const SMALL_MARGIN = 10;
 const MARGIN = 10;
 const SUB_MARGIN = 5;
 const HIGHLIGHT_COLOR = '#FF9800';
 const ADD_ICON = '+';
+const SEND_ICON = '✔️';
+const DELETE_ICON = '❌';
 class AbedlTab extends tabris_1.Tab {
     constructor(patient) {
         super({ title: 'AbedlTab' });
@@ -115,7 +119,7 @@ class AbedlTab extends tabris_1.Tab {
             case NOTE:
                 return new AbedlEntryCell_1.default()
                     .onSavePressed((section, index) => this.saveAbedlEntry(section, index))
-                    .onLongpress((section, index) => this.showContextDialog(section, index));
+                    .onTapped((section, index) => this.modifyAbedlEntry(section, index));
             case DIVIDER:
                 return new Divider();
             default:
@@ -171,22 +175,18 @@ class AbedlTab extends tabris_1.Tab {
             .onCreationComplete((entry) => this.addEntry(section, entry));
         app_1.storeData();
     }
-    showContextDialog(section, index) {
+    modifyAbedlEntry(section, index) {
         let entry = PatientData_1.getEntries(this.patient.abedlTable, section)[index];
         let inDatabase = (PatientData_1.getEntries(app_1.globalDataObject.abedlEntries, section).indexOf(entry)) !== -1;
-        let buttons = {
-            ok: 'Ja',
-            cancel: 'Nein',
-        };
-        if (!inDatabase)
-            buttons.cancel = 'in Datenbank';
-        new tabris_1.AlertDialog({
-            title: 'Abedl Eintrag Löschen?',
-            message: entry,
-            buttons
-        }).on({
-            closeOk: () => this.deleteAbedlEntry(section, index),
-        }).open();
+        new AddTextWindow(entry).onComplete(newString => {
+            let entries = PatientData_1.getEntries(this.patient.abedlTable, section);
+            entries[index] = newString;
+            app_1.storeData();
+            this.collectionView.refresh();
+        }).onDelete(() => {
+            this.deleteAbedlEntry(section, index);
+        });
+        // closeOk: () => this.deleteAbedlEntry(section, index),
     }
     saveAbedlEntry(section, index) {
         PatientData_1.getEntries(app_1.globalDataObject.abedlEntries, section).push(PatientData_1.getEntries(this.patient.abedlTable, section)[index]);
@@ -253,5 +253,41 @@ class Divider extends tabris_1.Composite {
     constructor() {
         super();
         this.append(new tabris_1.Composite({ left: 20, right: 40, top: 2, bottom: 2, background: constants_1.LIGHT_GRAY_COLOR }));
+    }
+}
+class AddTextWindow extends FloatingWindow_1.default {
+    constructor(text) {
+        super({ centerX: 0, centerY: 0, windowWidth: 0.9 });
+        this.append(new tabris_1.Button({
+            right: ['prev()', SMALL_MARGIN], top: SMALL_MARGIN, bottom: SMALL_MARGIN, width: 50,
+            text: SEND_ICON, textColor: HIGHLIGHT_COLOR
+        }).on({
+            select: () => this.onSelect()
+        }), new tabris_1.Button({
+            right: ['prev()', 0], top: SMALL_MARGIN, bottom: SMALL_MARGIN, width: 50,
+            text: DELETE_ICON, textColor: HIGHLIGHT_COLOR
+        }).on({
+            select: () => this._onDelete()
+        }), new tabris_1.TextInput({
+            left: SMALL_MARGIN, top: SMALL_MARGIN, right: ['prev()', SMALL_MARGIN], type: 'multiline', text
+        }).on({
+            accept: () => this.onSelect()
+        }));
+        this.once({ resize: () => this.find(tabris_1.TextInput).first().focused = true });
+    }
+    onComplete(callback) {
+        this.callback = callback;
+        return this;
+    }
+    onDelete(callback) {
+        this.delCallback = callback;
+    }
+    onSelect() {
+        this.callback(this.find(tabris_1.TextInput).first().text);
+        this.dispose();
+    }
+    _onDelete() {
+        this.delCallback();
+        this.dispose();
     }
 }

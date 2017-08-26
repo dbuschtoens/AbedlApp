@@ -8,6 +8,7 @@ import SectionHeadingCell from "./Cells/SectionHeadingCell";
 import AbedlEntryCell from "./Cells/AbedlEntryCell";
 import { LIST_SUBELEMENT_COLOR, LIGHT_GRAY_COLOR } from "../constants";
 import { abedlTexts } from "../ABEDLTexts";
+import FloatingWindow from "../FloatingWindow";
 
 
 const CHAPTER_TITLE = 'chapterTitle';
@@ -19,10 +20,13 @@ const DIVIDER = 'divider';
 const NOTES = 'notes';
 const NOTE = 'notes';
 
+const SMALL_MARGIN = 10;
 const MARGIN = 10;
 const SUB_MARGIN = 5;
 const HIGHLIGHT_COLOR = '#FF9800';
 const ADD_ICON = '+';
+const SEND_ICON = '✔️'
+const DELETE_ICON = '❌'
 
 export interface AbedlCellProperties extends TextViewProperties {
   descriptor: CellDescriptor;
@@ -148,7 +152,7 @@ export default class AbedlTab extends Tab {
       case NOTE:
         return new AbedlEntryCell()
           .onSavePressed((section, index) => this.saveAbedlEntry(section, index))
-          .onLongpress((section, index) => this.showContextDialog(section, index));
+          .onTapped((section, index) => this.modifyAbedlEntry(section, index));
       case DIVIDER:
         return new Divider();
       default:
@@ -205,21 +209,18 @@ export default class AbedlTab extends Tab {
     storeData();
   }
 
-  private showContextDialog(section: AbedlSectionIndex, index: number) {
+  private modifyAbedlEntry(section: AbedlSectionIndex, index: number) {
     let entry = getEntries(this.patient.abedlTable, section)[index];
     let inDatabase = (getEntries(globalDataObject.abedlEntries, section).indexOf(entry)) !== -1;
-    let buttons: any = {
-      ok: 'Ja',
-      cancel: 'Nein',
-    };
-    if (!inDatabase) buttons.cancel = 'in Datenbank';
-    new AlertDialog({
-      title: 'Abedl Eintrag Löschen?',
-      message: entry,
-      buttons
-    }).on({
-      closeOk: () => this.deleteAbedlEntry(section, index),
-    }).open();
+    new AddTextWindow(entry).onComplete(newString => {
+      let entries = getEntries(this.patient.abedlTable, section);
+      entries[index] = newString;
+      storeData();
+      this.collectionView.refresh();
+    }).onDelete(() => {
+      this.deleteAbedlEntry(section, index)
+    });
+    // closeOk: () => this.deleteAbedlEntry(section, index),
   }
 
   private saveAbedlEntry(section: AbedlSectionIndex, index: number) {
@@ -293,4 +294,54 @@ class Divider extends Composite {
     super();
     this.append(new Composite({ left: 20, right: 40, top: 2, bottom: 2, background: LIGHT_GRAY_COLOR }))
   }
+}
+
+class AddTextWindow extends FloatingWindow {
+
+  private callback: (text: string) => void;
+  private delCallback: () => void;
+
+  constructor(text: string) {
+    super({ centerX: 0, centerY: 0, windowWidth: 0.9 });
+    this.append(
+      new Button({
+        right: ['prev()', SMALL_MARGIN], top: SMALL_MARGIN, bottom: SMALL_MARGIN, width: 50,
+        text: SEND_ICON, textColor: HIGHLIGHT_COLOR
+      }).on({
+        select: () => this.onSelect()
+      }),
+      new Button({
+        right: ['prev()', 0], top: SMALL_MARGIN, bottom: SMALL_MARGIN, width: 50,
+        text: DELETE_ICON, textColor: HIGHLIGHT_COLOR
+      }).on({
+        select: () => this._onDelete()
+      }),
+      new TextInput({
+        left: SMALL_MARGIN, top: SMALL_MARGIN, right:['prev()', SMALL_MARGIN], type: 'multiline', text
+      }).on({
+        accept: () => this.onSelect()
+      }),
+    )
+    this.once({ resize: () => this.find(TextInput).first().focused = true });
+  }
+
+  public onComplete(callback: (text: string) => void) {
+    this.callback = callback;
+    return this;
+  }
+
+  public onDelete(callback: () => void) {
+    this.delCallback = callback;
+  }
+
+  private onSelect() {
+    this.callback(this.find(TextInput).first().text);
+    this.dispose();
+  }
+
+  private _onDelete() {
+    this.delCallback();
+    this.dispose();
+  }
+
 }

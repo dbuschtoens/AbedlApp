@@ -17,10 +17,8 @@ class AbedlEntryCell extends tabris_1.Composite {
         }
         else {
             this.on({
-                longpress: ({ state }) => {
-                    if (state !== 'end') {
-                        this.callback(this.section, this.contentIndex);
-                    }
+                tap: () => {
+                    this.callback(this.section, this.contentIndex);
                 }
             });
         }
@@ -47,7 +45,7 @@ class AbedlEntryCell extends tabris_1.Composite {
         }
         return this;
     }
-    onLongpress(callback) {
+    onTapped(callback) {
         this.callback = callback;
         return this;
     }
