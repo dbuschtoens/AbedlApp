@@ -20,9 +20,9 @@ export default class FloatingWindow extends Composite {
     properties.background = properties.background || 'white';
     properties.elevation = 1000;
     properties.cornerRadius = 5;
-    if (properties.width || properties.height) console.error('cant apply width to floating window' );
+    if (properties.width || properties.height) console.error('cant apply width to floating window');
     super(omit(properties, 'windowWidth', 'windowHeight'));
-    floatingWindowStack.push(this);
+    floatingWindowStack.unshift(this);
     this.windowWidth = properties.windowWidth;
     this.windowHeight = properties.windowHeight;
     this.backgroundBlur = new Composite({ left: 0, right: 0, top: 0, bottom: 0, background: BLUR_COLOR })
@@ -31,12 +31,6 @@ export default class FloatingWindow extends Composite {
         this.dispose();
       }).appendTo(ui.contentView);
     this.appendTo(this.backgroundBlur);
-    app.on({
-      backNavigation: (event) => {
-        event.preventDefault();
-        this.dispose();
-      }
-    });
     this.applyScreenSize();
     device.on({
       orientationChanged: () => this.applyScreenSize()
@@ -49,8 +43,7 @@ export default class FloatingWindow extends Composite {
   }
 
   public dispose() {
-    console.log('disposing Window');
-    floatingWindowStack.splice(floatingWindowStack.indexOf(this), 1);
+    console.log('disposing Window ' + this.constructor.name + ' ' + this.cid);
     this.backgroundBlur.dispose();
     super.dispose();
   }

@@ -37,12 +37,7 @@ class PatientListPage extends tabris_1.Page {
         this.collectionView.load(app_1.globalDataObject.patients.length + 1);
     }
     createCell(type) {
-        return (type === 'patient') ? new PatientCell().on({
-            longpress: (event) => {
-                if (event.state !== 'end')
-                    return this.onLongpress(event.target.index);
-            }
-        }) : new AddButtonCell();
+        return (type === 'patient') ? new PatientCell().onModify(index => this.onLongpress(index)) : new AddButtonCell();
     }
     updateCell(cell, index) {
         if (cell instanceof PatientCell) {
@@ -55,12 +50,29 @@ class PatientCell extends tabris_1.Composite {
     constructor() {
         super({ highlightOnTouch: true });
         this.append(new tabris_1.TextView({ left: MARGIN, top: SMALL_MARGIN, font: constants_1.LIST_ELEMENT_FONT, textColor: constants_1.LIST_ELEMENT_COLOR, id: 'name' }), new tabris_1.TextView({ left: MARGIN, top: ['prev()', 0], font: constants_1.LIST_SUBELEMENT_FONT, textColor: constants_1.LIST_SUBELEMENT_COLOR, id: 'date' }));
+        if (tabris_1.device.platform === 'windows') {
+            new tabris_1.Button({ right: MARGIN, centerY: 0, text: 'Bearbeiten' }).on({
+                select: event => this.callback(this.index)
+            }).appendTo(this);
+        }
+        else {
+            this.on({
+                longpress: (event) => {
+                    if (event.state !== 'end')
+                        return this.callback(this.index);
+                }
+            });
+        }
     }
     update(index) {
         let patient = app_1.globalDataObject.patients[index];
         this.index = index;
         this.find(tabris_1.TextView).filter('#name').first().text = patient.name;
         this.find(tabris_1.TextView).filter('#date').first().text = patient.date;
+    }
+    onModify(callback) {
+        this.callback = callback;
+        return this;
     }
 }
 class AddButtonCell extends tabris_1.Composite {

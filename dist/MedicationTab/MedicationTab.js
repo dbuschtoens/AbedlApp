@@ -86,7 +86,7 @@ exports.default = MedicationTab;
 class Divider extends tabris_1.Composite {
     constructor() {
         super();
-        this.append(new tabris_1.Composite({ left: 20, right: 40, top: 2, bottom: 2, background: constants_1.FADED_HIGHLIGHT_COLOR }));
+        this.append(new tabris_1.Composite({ left: 20, right: 20, top: 2, bottom: 2, background: constants_1.FADED_HIGHLIGHT_COLOR }));
     }
 }
 class AddButtonCell extends tabris_1.Composite {

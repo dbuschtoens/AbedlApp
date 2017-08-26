@@ -4,19 +4,21 @@ import PatientListPage from './PatientListPage';
 import { PatientData, AbedlTable, AbedlChapter, Medication, Diagnosis } from "./PatientData";
 import FloatingWindow from "./FloatingWindow";
 import SyncPage from "./SyncPage";
+import { abedlTexts } from "./ABEDLTexts";
 
 const ABEDL_PATH = '../ressources/ABEDLTexts.json';
 export let floatingWindowStack: FloatingWindow[] = [];
 app.on({
   backNavigation: (event) => {
-    console.log('backNav');
     if (floatingWindowStack.length > 0) {
-      floatingWindowStack[floatingWindowStack.length - 1].dispose();
-      event.preventDefault();
+      let topWindow = floatingWindowStack.find(window => window && !window.isDisposed());
+      if (topWindow) {
+        topWindow.dispose();
+        event.preventDefault();
+      }
     }
   }
 });
-export let abedlTexts: Array<{ name: string, shortName: string, subChapters: string[] }> = [];
 export let globalDataObject: {
   nextMedId: number,
   nextDiagId: number,
@@ -28,7 +30,7 @@ export let globalDataObject: {
   dosageForms: string[]
 };
 
-export function storeData(newData: any) {
+export function storeData(newData?: any) {
   if (newData) {
     Object.keys(globalDataObject).forEach(key => {
       globalDataObject[key] = newData[key];
@@ -83,8 +85,17 @@ export function createMedication(
       sideEffects: string,
       counterSigns: string
     }) {
-  if (globalDataObject.medications.find(med => med.name === name)) {
-    console.error(`Medikament "${name}" existiert bereits`);
+  let existingMed = globalDataObject.medications.find(med => med.name === name);
+  if (existingMed) {
+      existingMed.name = name;
+      existingMed.agent = agent;
+      existingMed.availableDosages = availableDosages;
+      existingMed.form = form;
+      existingMed.usages = usages;
+      existingMed.sideEffects = sideEffects;
+      existingMed.counterSigns = counterSigns;
+      storeData();
+      return existingMed;
   } else {
     let id = globalDataObject.nextMedId++;
     let result: Medication = {
@@ -105,6 +116,7 @@ export function createMedication(
 
 export function getMedication(id: number) {
   let result = globalDataObject.medications.find(med => med.id === id);
+  console.log('found medication: ' + result);
   return result;
 }
 
@@ -154,22 +166,17 @@ let action: Action = new Action({
 // createPatient('Ute Testbeispiel', '25.4.2014');
 // createPatient('Manfred Foobar', '172.0.1337');
 
-loadData().then(() => loadMainPage());
+loadData()
+loadMainPage();
 
 function loadData() {
-  return fetch(ABEDL_PATH)
-    .then((response) => response.json()
-      .then((json) => {
-        abedlTexts = json;
-        let storedData = localStorage.getItem('data');
-        if (storedData) {
-          globalDataObject = JSON.parse(storedData);
-        } else {
-          globalDataObject = initData();
-          console.log('data: \n ' + JSON.stringify(globalDataObject));
-        }
-      })
-    ).catch((error) => console.error('Error loading Data:\n' + error));
+  console.log('loadingData');
+  let storedData = localStorage.getItem('data');
+  if (storedData) {
+    globalDataObject = JSON.parse(storedData);
+  } else {
+    globalDataObject = initData();
+  }
 }
 
 function loadMainPage() {

@@ -1,4 +1,4 @@
-import { Composite, TextView } from 'tabris';
+import { Composite, TextView, device } from 'tabris';
 import { AbedlSectionIndex, getEntries } from "../../PatientData";
 import { AbedlCellProperties, CellDescriptor } from "../AbedlTab";
 import { globalDataObject } from "../../app";
@@ -15,15 +15,26 @@ export default class AbedlEntryCell extends Composite {
   private callback: (section: AbedlSectionIndex, index: number) => void;
 
   constructor() {
-    super({highlightOnTouch: true});
+    super({ highlightOnTouch: true });
     this.textView = new TextView().appendTo(this);
-    this.on({
-      longpress: ({state}) => {
-        if (state !== 'end') {
+    if (device.platform === 'windows') {
+
+      this.on({
+        tap: () => {
           this.callback(this.section, this.contentIndex);
         }
-      }
-    });
+      });
+
+    } else {
+
+      this.on({
+        longpress: ({ state }) => {
+          if (state !== 'end') {
+            this.callback(this.section, this.contentIndex);
+          }
+        }
+      });
+    }
     // this.saveButton = new TextView({
     //   layoutData: { centerY: 0, left: [this.textView, SUB_MARGIN], right: 0 },
     //   text: SAVE_ICON, font: '20px', highlightOnTouch: true, alignment: 'left'

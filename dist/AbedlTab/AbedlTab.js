@@ -8,6 +8,7 @@ const HeadingCell_1 = require("./Cells/HeadingCell");
 const SectionHeadingCell_1 = require("./Cells/SectionHeadingCell");
 const AbedlEntryCell_1 = require("./Cells/AbedlEntryCell");
 const constants_1 = require("../constants");
+const ABEDLTexts_1 = require("../ABEDLTexts");
 const CHAPTER_TITLE = 'chapterTitle';
 const SUBCHAPTER_TITLE = 'subChapterTitle';
 const HEADING = 'heading';
@@ -47,11 +48,11 @@ class AbedlTab extends tabris_1.Tab {
         let drawerContent = new tabris_1.ScrollView({
             left: 0, right: 0, top: 0, bottom: 0
         }).appendTo(tabris_1.ui.drawer);
-        for (let chapterIndex = 0; chapterIndex < app_1.abedlTexts.length; chapterIndex++) {
+        for (let chapterIndex = 0; chapterIndex < ABEDLTexts_1.abedlTexts.length; chapterIndex++) {
             let thisChapter = chapterIndex;
             new tabris_1.TextView({
                 left: MARGIN, top: ['prev()', 2 * MARGIN], right: MARGIN,
-                text: (thisChapter + 1) + '. ' + app_1.abedlTexts[thisChapter].shortName,
+                text: (thisChapter + 1) + '. ' + ABEDLTexts_1.abedlTexts[thisChapter].shortName,
                 font: '20px'
             }).on({
                 tap: () => {
@@ -64,7 +65,7 @@ class AbedlTab extends tabris_1.Tab {
     }
     createCellDescriptors() {
         this.cellDescriptors = [];
-        for (let chapter = 0; chapter < app_1.abedlTexts.length; chapter++) {
+        for (let chapter = 0; chapter < ABEDLTexts_1.abedlTexts.length; chapter++) {
             let chapterData = this.patient.abedlTable[chapter];
             this.cellDescriptors.push({
                 abedlIndex: { chapter, subChapter: -1, type: 'problems' }, type: 'heading', headingType: 'chapterTitle'
@@ -146,7 +147,7 @@ class AbedlTab extends tabris_1.Tab {
             cell.set({
                 layoutData: { left: descriptor.abedlIndex.type === 'notes' ? 10 : 15, centerY: 0 },
                 descriptor,
-                text: descriptor.abedlIndex.type === 'notes' ? 'Notizen' : (descriptor.abedlIndex.type === 'problems' ? 'Probleme' : descriptor.abedlIndex.type === 'ressources' ? 'Ressourcen' : 'stuff'),
+                text: descriptor.abedlIndex.type === 'notes' ? 'Notizen' : (descriptor.abedlIndex.type === 'problems' ? 'Probleme' : descriptor.abedlIndex.type === 'ressources' ? 'Ressourcen' : 'Maßnahmen'),
                 font: 'bold 18px'
             });
         }
@@ -171,18 +172,18 @@ class AbedlTab extends tabris_1.Tab {
         let entry = PatientData_1.getEntries(this.patient.abedlTable, section)[index];
         let inDatabase = (PatientData_1.getEntries(app_1.globalDataObject.abedlEntries, section).indexOf(entry)) !== -1;
         let buttons = {
-            ok: 'abbrechen',
-            cancel: 'löschen',
+            ok: 'Löschen',
+            neutral: 'Abbrechen',
         };
         if (!inDatabase)
-            buttons.neutral = 'in Datenbank';
+            buttons.cancel = 'in Datenbank';
         new tabris_1.AlertDialog({
             title: 'Abedl Eintrag',
             message: entry,
             buttons
         }).on({
-            closeCancel: () => this.deleteAbedlEntry(section, index),
-            closeNeutral: () => this.saveAbedlEntry(section, index)
+            closeOk: () => this.deleteAbedlEntry(section, index),
+            closeCancel: () => this.saveAbedlEntry(section, index)
         }).open();
     }
     saveAbedlEntry(section, index) {
@@ -233,10 +234,10 @@ class AbedlTab extends tabris_1.Tab {
         });
     }
     getChapterText(descriptor) {
-        return `${(descriptor.abedlIndex.chapter + 1)}.  ${app_1.abedlTexts[descriptor.abedlIndex.chapter].name}`;
+        return `${(descriptor.abedlIndex.chapter + 1)}.  ${ABEDLTexts_1.abedlTexts[descriptor.abedlIndex.chapter].name}`;
     }
     getSubChapterText(descriptor) {
-        let subChapterTitle = app_1.abedlTexts[descriptor.abedlIndex.chapter].subChapters[descriptor.abedlIndex.subChapter];
+        let subChapterTitle = ABEDLTexts_1.abedlTexts[descriptor.abedlIndex.chapter].subChapters[descriptor.abedlIndex.subChapter];
         if (subChapterTitle === '')
             return '';
         if (descriptor.headingType === 'notes')

@@ -11,17 +11,16 @@ const SMALL_MARGIN = 10;
 const LABEL_FONT = 'bold 18px';
 const ADD_FONT = 'bold 28px';
 const SELECTED_BUTTON_BACKGROUND = '#ffbb56';
+const WINDOWS_MARGIN = tabris_1.device.platform === 'windows' ? 10 : 0;
 class CreateMedicationOverlay extends FloatingWindow_1.default {
     constructor(medication) {
         super({ windowHeight: 0.85, windowWidth: 0.9, centerX: 0, top: MARGIN });
-        if (medication) {
-            this.medUsages = medication.usages;
-            this.medAvailableDosages = medication.availableDosages;
-            this.medSideEffects = medication.sideEffects;
-            this.medCounterSigns = medication.counterSigns;
-            this.medAgent = medication.agent;
-            this.medName = medication.name;
-        }
+        this.medUsages = medication ? medication.usages : [];
+        this.medAvailableDosages = medication ? medication.availableDosages : [];
+        this.medSideEffects = medication ? medication.sideEffects : '';
+        this.medCounterSigns = medication ? medication.counterSigns : '';
+        this.medAgent = medication ? medication.agent : '';
+        this.medName = medication ? medication.name : '';
         this.scrollView = new tabris_1.ScrollView({ left: 0, right: 0, top: 0, bottom: 80 }).appendTo(this);
         new tabris_1.Button({
             right: MARGIN, bottom: MARGIN, top: [this.scrollView, SMALL_MARGIN],
@@ -51,10 +50,8 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
             med.usages = [];
             this.usages.forEach(usage => med.usages.push(usage.text));
             let medication = app_1.createMedication(med);
-            if (medication) {
-                this.callback(medication);
-                this.dispose();
-            }
+            this.callback(medication);
+            this.dispose();
         }
     }
     verify() {
@@ -78,7 +75,7 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
         return isOkay;
     }
     createUI() {
-        this.scrollView.append(new tabris_1.TextView({ id: 'title' }), new tabris_1.TextView({ id: 'titleLabel' }), new tabris_1.TextInput({ id: 'titleInput' }), new tabris_1.TextView({ id: 'agentLabel' }), new tabris_1.TextInput({ id: 'agentInput' }), new tabris_1.TextView({ id: 'counterSignsLabel' }), new tabris_1.TextInput({ id: 'counterSignsInput', type: 'multiline' }), new tabris_1.TextView({ id: 'sideEffectsLabel' }), new tabris_1.TextInput({ id: 'sideEffectsInput', type: 'multiline' }), new tabris_1.TextView({ id: 'dosageLabel' }), new tabris_1.Button({ id: 'dosageAnker' }), new tabris_1.Button({ id: 'addDosageButton' }), new tabris_1.TextView({ id: 'formLabel' }), new tabris_1.Picker({ id: 'formPicker' }), new tabris_1.Button({ id: 'addFormButton' }), new tabris_1.TextView({ id: 'usageLable' }), new tabris_1.Button({ id: 'addUsageButton' }));
+        this.scrollView.append(new tabris_1.TextView({ id: 'title' }), new tabris_1.TextView({ id: 'titleLabel' }), new tabris_1.TextInput({ id: 'titleInput' }), new tabris_1.TextView({ id: 'agentLabel' }), new tabris_1.TextInput({ id: 'agentInput' }), new tabris_1.TextView({ id: 'dosageLabel' }), new tabris_1.Button({ id: 'dosageAnker' }), new tabris_1.Button({ id: 'addDosageButton' }), new tabris_1.TextView({ id: 'formLabel' }), new tabris_1.Picker({ id: 'formPicker' }), new tabris_1.Button({ id: 'addFormButton' }), new tabris_1.TextView({ id: 'usageLable' }), new tabris_1.Button({ id: 'addUsageButton' }), new tabris_1.TextView({ id: 'sideEffectsLabel' }), new tabris_1.TextInput({ id: 'sideEffectsInput', type: 'multiline' }), new tabris_1.TextView({ id: 'counterSignsLabel' }), new tabris_1.TextInput({ id: 'counterSignsInput', type: 'multiline' }), new tabris_1.Composite({ id: 'filler' }));
         this.createDosageButtons();
         this.createUsageButtons();
     }
@@ -91,7 +88,7 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
             '#agentInput': { text: this.medAgent },
             '#counterSignsLabel': { text: 'Gegenanzeichen:' },
             '#counterSignsInput': { text: this.medCounterSigns },
-            '#sideEffectsLabel': { text: 'Nebeneffekte:' },
+            '#sideEffectsLabel': { text: 'Nebenwirkungen:' },
             '#sideEffectsInput': { text: this.medSideEffects },
             '#dosageLabel': { text: 'Dosis:' },
             '#addDosageButton': { text: '+' },
@@ -130,14 +127,14 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
             '#title': { left: BIG_MARGIN, top: MARGIN },
             '#titleLabel': { left: BIG_MARGIN, top: ['prev()', MARGIN] },
             '#titleInput': { left: ['prev()', SMALL_MARGIN], baseline: 'prev()', right: BIG_MARGIN },
-            '#agentLabel': { left: BIG_MARGIN, top: 'prev()' },
+            '#agentLabel': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN] },
             '#agentInput': { left: ['prev()', SMALL_MARGIN], baseline: 'prev()', right: BIG_MARGIN },
-            '#counterSignsLabel': { left: BIG_MARGIN, top: 'prev()', right: BIG_MARGIN },
-            '#counterSignsInput': { left: BIG_MARGIN, top: 'prev()', right: BIG_MARGIN },
-            '#sideEffectsLabel': { left: BIG_MARGIN, top: 'prev()', right: BIG_MARGIN },
-            '#sideEffectsInput': { left: BIG_MARGIN, top: 'prev()', right: BIG_MARGIN },
-            '#dosageLabel': { left: BIG_MARGIN, top: 'prev()' },
-            '#dosageAnker': { left: 0, width: SMALL_MARGIN, top: 'prev()', height: 2 },
+            '#counterSignsLabel': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN], right: BIG_MARGIN },
+            '#counterSignsInput': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN], right: BIG_MARGIN },
+            '#sideEffectsLabel': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN], right: BIG_MARGIN },
+            '#sideEffectsInput': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN], right: BIG_MARGIN },
+            '#dosageLabel': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN] },
+            '#dosageAnker': { left: 0, width: SMALL_MARGIN, top: ['prev()', WINDOWS_MARGIN], height: 2 },
             '.dosageButton': { left: ['prev()', SMALL_MARGIN], top: ['#dosageLabel', MARGIN], height: 30 },
             '#addDosageButton': { left: d > 0 ? ['prev()', SMALL_MARGIN] : BIG_MARGIN, top: '#dosageLabel', height: 45, width: 40 },
             '#formLabel': { left: BIG_MARGIN, top: ['#addDosageButton', SMALL_MARGIN] },
@@ -146,6 +143,7 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
             '#usageLable': { left: BIG_MARGIN, top: '#formPicker', right: BIG_MARGIN },
             '.usageButton': { left: BIG_MARGIN, top: ['prev()', SMALL_MARGIN], right: BIG_MARGIN },
             '#addUsageButton': { left: BIG_MARGIN, top: ['prev()', MARGIN], right: BIG_MARGIN, height: 60 },
+            '#filler': { left: BIG_MARGIN, top: ['prev()', MARGIN], right: BIG_MARGIN, height: tabris_1.device.screenHeight * 0.35 },
         });
     }
     updateFormPicker() {
@@ -262,7 +260,7 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
 exports.default = CreateMedicationOverlay;
 const SEND_ICON = '✔️';
 class AddTextWindow extends FloatingWindow_1.default {
-    constructor() {
+    constructor(message) {
         super({ centerX: 0, centerY: 0, windowWidth: 0.9 });
         this.append(new tabris_1.TextInput({
             left: SMALL_MARGIN, right: 70, top: SMALL_MARGIN, type: 'multiline'
@@ -274,6 +272,8 @@ class AddTextWindow extends FloatingWindow_1.default {
         }).on({
             select: () => this.onSelect()
         }));
+        if (message)
+            this.find(tabris_1.TextInput).first().message = message;
         this.once({ resize: () => this.find(tabris_1.TextInput).first().focused = true });
     }
     onComplete(callback) {
@@ -311,7 +311,7 @@ class AddDosageWindow extends FloatingWindow_1.default {
         });
     }
     promptUnitAdd() {
-        new AddTextWindow().onComplete((text) => {
+        new AddTextWindow('neue einheit').onComplete((text) => {
             app_1.globalDataObject.dosageUnits.push(text);
             app_1.storeData();
             this.addUnit(text);

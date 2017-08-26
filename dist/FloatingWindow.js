@@ -13,7 +13,7 @@ class FloatingWindow extends tabris_1.Composite {
         if (properties.width || properties.height)
             console.error('cant apply width to floating window');
         super(util_1.omit(properties, 'windowWidth', 'windowHeight'));
-        app_1.floatingWindowStack.push(this);
+        app_1.floatingWindowStack.unshift(this);
         this.windowWidth = properties.windowWidth;
         this.windowHeight = properties.windowHeight;
         this.backgroundBlur = new tabris_1.Composite({ left: 0, right: 0, top: 0, bottom: 0, background: BLUR_COLOR })
@@ -22,12 +22,6 @@ class FloatingWindow extends tabris_1.Composite {
             this.dispose();
         }).appendTo(tabris_1.ui.contentView);
         this.appendTo(this.backgroundBlur);
-        tabris_1.app.on({
-            backNavigation: (event) => {
-                event.preventDefault();
-                this.dispose();
-            }
-        });
         this.applyScreenSize();
         tabris_1.device.on({
             orientationChanged: () => this.applyScreenSize()
@@ -40,8 +34,7 @@ class FloatingWindow extends tabris_1.Composite {
             this.width = tabris_1.device.screenWidth * this.windowWidth;
     }
     dispose() {
-        console.log('disposing Window');
-        app_1.floatingWindowStack.splice(app_1.floatingWindowStack.indexOf(this), 1);
+        console.log('disposing Window ' + this.constructor.name + ' ' + this.cid);
         this.backgroundBlur.dispose();
         super.dispose();
     }

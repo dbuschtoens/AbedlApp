@@ -15,9 +15,10 @@ const TEXT_BUTTON_BACKGROUND = '#f7f7f7';
 const SELECTED_BUTTON_BACKGROUND = '#ffbb56';
 class CreatePerscriptionOverlay extends FloatingWindow_1.default {
     constructor(medOrPerscription) {
+        console.log('constructor argument: ' + JSON.stringify(medOrPerscription));
         super({ windowWidth: 0.9, windowHeight: 0.7, centerX: 0, top: 2 * BIG_MARGIN });
-        if (medOrPerscription.hasOwnProperty('medIndex')) {
-            this.medication = app_1.globalDataObject.medications[medOrPerscription.medId];
+        if (medOrPerscription.hasOwnProperty('medId')) {
+            this.medication = app_1.getMedication(medOrPerscription.medId);
         }
         else {
             this.medication = medOrPerscription;
@@ -257,7 +258,7 @@ class TimesDisplay extends tabris_1.Composite {
     constructor(properties) {
         properties = properties;
         super(properties);
-        this.append(new TextButton({ id: 'morning', text: '0' }), new tabris_1.TextView({ text: '-' }), new TextButton({ id: 'noon', text: '0' }), new tabris_1.TextView({ text: '-' }), new TextButton({ id: 'evening', text: '0' }), new tabris_1.TextView({ text: '-' }), new TextButton({ id: 'night', text: '0' }), new TextToggleButton({ id: 'adLib', text: 'n.Bel.' }));
+        this.append(new TextButton({ id: 'morning', text: '0' }), new tabris_1.TextView({ text: '-' }), new TextButton({ id: 'noon', text: '0' }), new tabris_1.TextView({ text: '-' }), new TextButton({ id: 'evening', text: '0' }), new tabris_1.TextView({ text: '-' }), new TextButton({ id: 'night', text: '0' }), new TextToggleButton({ id: 'adLib', text: 'n.Bed.' }));
         this.apply({
             'TextButton': { left: ['prev()', SMALL_MARGIN], top: 5, bottom: 5, pad: 5 },
             'TextView': { left: ['prev()', SMALL_MARGIN], top: 5, bottom: 5 },

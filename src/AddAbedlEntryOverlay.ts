@@ -47,10 +47,11 @@ export default class AddEntryOverlay extends FloatingWindow {
         select: ({ index }) => this.onSelect(index)
       })
     );
-    this.once({resize: () => this.textInput.focused = true});
+    this.once({ resize: () => this.textInput.focused = true });
   }
 
   private onSelect(index: number) {
+    console.error('select '+  index);
     if (index % 2 === 0) {
       let suggestion = this.filteredSuggestions[Math.floor(index / 2)];
       this.textInput.text = suggestion;
@@ -130,13 +131,19 @@ class TextCell extends Composite {
   constructor() {
     super({ width: device.screenWidth });
     this.textView = new TextView().appendTo(this);
-    this.on({
-      longpress: ({ state }) => {
-        if (state !== 'end') {
-          this.callback(this.index);
+    if (device.platform === 'windows') {
+      new Button({ right: MARGIN, centerY: 0, text: 'Löschen' }).on({
+        select: event => this.callback(this.index)
+      }).appendTo(this);
+    } else {
+      this.on({
+        longpress: ({ state }) => {
+          if (state !== 'end') {
+            this.callback(this.index);
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   private callback: (index: number) => void;

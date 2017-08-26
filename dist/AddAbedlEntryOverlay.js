@@ -39,6 +39,7 @@ class AddEntryOverlay extends FloatingWindow_1.default {
         this.once({ resize: () => this.textInput.focused = true });
     }
     onSelect(index) {
+        console.error('select ' + index);
         if (index % 2 === 0) {
             let suggestion = this.filteredSuggestions[Math.floor(index / 2)];
             this.textInput.text = suggestion;
@@ -103,13 +104,20 @@ class TextCell extends tabris_1.Composite {
     constructor() {
         super({ width: tabris_1.device.screenWidth });
         this.textView = new tabris_1.TextView().appendTo(this);
-        this.on({
-            longpress: ({ state }) => {
-                if (state !== 'end') {
-                    this.callback(this.index);
+        if (tabris_1.device.platform === 'windows') {
+            new tabris_1.Button({ right: MARGIN, centerY: 0, text: 'Löschen' }).on({
+                select: event => this.callback(this.index)
+            }).appendTo(this);
+        }
+        else {
+            this.on({
+                longpress: ({ state }) => {
+                    if (state !== 'end') {
+                        this.callback(this.index);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
     set(arg1, value) {
         if (typeof arg1 === 'string') {

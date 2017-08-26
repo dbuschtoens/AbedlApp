@@ -103,7 +103,7 @@ export default class MedicationTab extends Tab {
 class Divider extends Composite {
   constructor() {
     super();
-    this.append(new Composite({ left: 20, right: 40, top: 2, bottom: 2, background: FADED_HIGHLIGHT_COLOR }))
+    this.append(new Composite({ left: 20, right: 20, top: 2, bottom: 2, background: FADED_HIGHLIGHT_COLOR }))
   }
 }
 

@@ -37,7 +37,7 @@ export default class MedicationCell extends Composite {
   }
 
   private createTimeText(time: PerscriptionTimes) {
-    if (time.adLib) return 'nach Belieben';
+    if (time.adLib) return 'nach Bedarf';
     else return time.morning + ' - ' + time.noon + ' - ' + time.evening + ' - ' + time.night;
   }
 

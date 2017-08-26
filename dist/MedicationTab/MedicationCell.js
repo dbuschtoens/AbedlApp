@@ -33,7 +33,7 @@ class MedicationCell extends tabris_1.Composite {
     }
     createTimeText(time) {
         if (time.adLib)
-            return 'nach Belieben';
+            return 'nach Bedarf';
         else
             return time.morning + ' - ' + time.noon + ' - ' + time.evening + ' - ' + time.night;
     }

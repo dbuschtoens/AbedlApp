@@ -11,6 +11,7 @@ const SMALL_MARGIN = 10;
 const LABEL_FONT = 'bold 18px';
 const ADD_FONT = 'bold 28px';
 const SELECTED_BUTTON_BACKGROUND = '#ffbb56'
+const WINDOWS_MARGIN = device.platform === 'windows' ? 10 : 0;
 
 export default class CreateMedicationOverlay extends FloatingWindow {
 
@@ -30,14 +31,12 @@ export default class CreateMedicationOverlay extends FloatingWindow {
 
   constructor(medication?: Medication) {
     super({ windowHeight: 0.85, windowWidth: 0.9, centerX: 0, top: MARGIN });
-    if (medication) {
-      this.medUsages = medication.usages;
-      this.medAvailableDosages = medication.availableDosages;
-      this.medSideEffects = medication.sideEffects;
-      this.medCounterSigns = medication.counterSigns;
-      this.medAgent = medication.agent;
-      this.medName = medication.name;
-    }
+    this.medUsages = medication ? medication.usages : [];
+    this.medAvailableDosages = medication ? medication.availableDosages : [];
+    this.medSideEffects = medication ? medication.sideEffects : '';
+    this.medCounterSigns = medication ? medication.counterSigns : '';
+    this.medAgent = medication ? medication.agent : '';
+    this.medName = medication ? medication.name : '';
     this.scrollView = new ScrollView({ left: 0, right: 0, top: 0, bottom: 80 }).appendTo(this);
     new Button({
       right: MARGIN, bottom: MARGIN, top: [this.scrollView, SMALL_MARGIN],
@@ -70,10 +69,8 @@ export default class CreateMedicationOverlay extends FloatingWindow {
       med.usages = [];
       this.usages.forEach(usage => med.usages.push(usage.text));
       let medication = createMedication(med);
-      if (medication) {
-        this.callback(medication);
-        this.dispose();
-      }
+      this.callback(medication);
+      this.dispose();
     }
   }
 
@@ -105,10 +102,6 @@ export default class CreateMedicationOverlay extends FloatingWindow {
       new TextInput({ id: 'titleInput' }),
       new TextView({ id: 'agentLabel' }),
       new TextInput({ id: 'agentInput' }),
-      new TextView({ id: 'counterSignsLabel' }),
-      new TextInput({ id: 'counterSignsInput', type: 'multiline' }),
-      new TextView({ id: 'sideEffectsLabel' }),
-      new TextInput({ id: 'sideEffectsInput', type: 'multiline' }),
       new TextView({ id: 'dosageLabel' }),
       new Button({ id: 'dosageAnker' }),
       new Button({ id: 'addDosageButton' }),
@@ -116,7 +109,12 @@ export default class CreateMedicationOverlay extends FloatingWindow {
       new Picker({ id: 'formPicker' }),
       new Button({ id: 'addFormButton' }),
       new TextView({ id: 'usageLable' }),
-      new Button({ id: 'addUsageButton' })
+      new Button({ id: 'addUsageButton' }),
+      new TextView({ id: 'sideEffectsLabel' }),
+      new TextInput({ id: 'sideEffectsInput', type: 'multiline' }),
+      new TextView({ id: 'counterSignsLabel' }),
+      new TextInput({ id: 'counterSignsInput', type: 'multiline' }),
+      new Composite({id: 'filler'})
     );
     this.createDosageButtons();
     this.createUsageButtons();
@@ -131,7 +129,7 @@ export default class CreateMedicationOverlay extends FloatingWindow {
       '#agentInput': { text: this.medAgent },
       '#counterSignsLabel': { text: 'Gegenanzeichen:' },
       '#counterSignsInput': { text: this.medCounterSigns },
-      '#sideEffectsLabel': { text: 'Nebeneffekte:' },
+      '#sideEffectsLabel': { text: 'Nebenwirkungen:' },
       '#sideEffectsInput': { text: this.medSideEffects },
       '#dosageLabel': { text: 'Dosis:' },
       '#addDosageButton': { text: '+' },
@@ -173,14 +171,14 @@ export default class CreateMedicationOverlay extends FloatingWindow {
       '#title': { left: BIG_MARGIN, top: MARGIN },
       '#titleLabel': { left: BIG_MARGIN, top: ['prev()', MARGIN] },
       '#titleInput': { left: ['prev()', SMALL_MARGIN], baseline: 'prev()', right: BIG_MARGIN },
-      '#agentLabel': { left: BIG_MARGIN, top: 'prev()' },
+      '#agentLabel': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN] },
       '#agentInput': { left: ['prev()', SMALL_MARGIN], baseline: 'prev()', right: BIG_MARGIN },
-      '#counterSignsLabel': { left: BIG_MARGIN, top: 'prev()', right: BIG_MARGIN },
-      '#counterSignsInput': { left: BIG_MARGIN, top: 'prev()', right: BIG_MARGIN },
-      '#sideEffectsLabel': { left: BIG_MARGIN, top: 'prev()', right: BIG_MARGIN },
-      '#sideEffectsInput': { left: BIG_MARGIN, top: 'prev()', right: BIG_MARGIN },
-      '#dosageLabel': { left: BIG_MARGIN, top: 'prev()' },
-      '#dosageAnker': { left: 0, width: SMALL_MARGIN, top: 'prev()', height: 2 },
+      '#counterSignsLabel': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN], right: BIG_MARGIN },
+      '#counterSignsInput': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN], right: BIG_MARGIN },
+      '#sideEffectsLabel': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN], right: BIG_MARGIN },
+      '#sideEffectsInput': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN], right: BIG_MARGIN },
+      '#dosageLabel': { left: BIG_MARGIN, top: ['prev()', WINDOWS_MARGIN] },
+      '#dosageAnker': { left: 0, width: SMALL_MARGIN, top: ['prev()', WINDOWS_MARGIN], height: 2 },
       '.dosageButton': { left: ['prev()', SMALL_MARGIN], top: ['#dosageLabel', MARGIN], height: 30 }, //
       '#addDosageButton': { left: d > 0 ? ['prev()', SMALL_MARGIN] : BIG_MARGIN, top: '#dosageLabel', height: 45, width: 40 },
       '#formLabel': { left: BIG_MARGIN, top: ['#addDosageButton', SMALL_MARGIN] },
@@ -189,6 +187,7 @@ export default class CreateMedicationOverlay extends FloatingWindow {
       '#usageLable': { left: BIG_MARGIN, top: '#formPicker', right: BIG_MARGIN },
       '.usageButton': { left: BIG_MARGIN, top: ['prev()', SMALL_MARGIN], right: BIG_MARGIN },
       '#addUsageButton': { left: BIG_MARGIN, top: ['prev()', MARGIN], right: BIG_MARGIN, height: 60 },
+      '#filler': { left: BIG_MARGIN, top: ['prev()', MARGIN], right: BIG_MARGIN, height: device.screenHeight * 0.35 },
     });
   }
 
@@ -322,7 +321,7 @@ class AddTextWindow extends FloatingWindow {
 
   private callback: (text: string) => void;
 
-  constructor() {
+  constructor(message?: string) {
     super({ centerX: 0, centerY: 0, windowWidth: 0.9 });
     this.append(
       new TextInput({
@@ -337,6 +336,7 @@ class AddTextWindow extends FloatingWindow {
         select: () => this.onSelect()
       })
     )
+    if (message) this.find(TextInput).first().message = message;
     this.once({ resize: () => this.find(TextInput).first().focused = true });
   }
 
@@ -389,7 +389,7 @@ class AddDosageWindow extends FloatingWindow {
   }
 
   private promptUnitAdd() {
-    new AddTextWindow().onComplete((text) => {
+    new AddTextWindow('neue einheit').onComplete((text) => {
       globalDataObject.dosageUnits.push(text);
       storeData();
       this.addUnit(text)

@@ -8,13 +8,22 @@ class AbedlEntryCell extends tabris_1.Composite {
     constructor() {
         super({ highlightOnTouch: true });
         this.textView = new tabris_1.TextView().appendTo(this);
-        this.on({
-            longpress: ({ state }) => {
-                if (state !== 'end') {
+        if (tabris_1.device.platform === 'windows') {
+            this.on({
+                tap: () => {
                     this.callback(this.section, this.contentIndex);
                 }
-            }
-        });
+            });
+        }
+        else {
+            this.on({
+                longpress: ({ state }) => {
+                    if (state !== 'end') {
+                        this.callback(this.section, this.contentIndex);
+                    }
+                }
+            });
+        }
         // this.saveButton = new TextView({
         //   layoutData: { centerY: 0, left: [this.textView, SUB_MARGIN], right: 0 },
         //   text: SAVE_ICON, font: '20px', highlightOnTouch: true, alignment: 'left'

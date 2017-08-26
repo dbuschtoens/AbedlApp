@@ -14,17 +14,27 @@ class PatientOverlay extends FloatingWindow_1.default {
         }), new tabris_1.TextInput({
             left: ['prev()', INNER_MARGIN], right: MARGIN, baseline: 'prev()', text: name,
             id: 'nameInput'
+        }).on({
+            accept: () => {
+                this.find(tabris_1.TextInput).filter('#dateInput').first().focused = true;
+            }
         }), new tabris_1.TextView({
             left: MARGIN, top: ['prev()', INNER_MARGIN],
             text: 'Geburtsdatum:'
         }), new tabris_1.TextInput({
             left: ['prev()', INNER_MARGIN], right: MARGIN, baseline: 'prev()', text: date, keyboard: 'numbersAndPunctuation',
             id: 'dateInput'
+        }).on({
+            accept: () => {
+                this.onAccept();
+            }
         }));
     }
     onCreationComplete(callback) {
         this.callback = callback;
     }
+    onAccept() { }
+    ;
 }
 class CreatePatientOverlay extends PatientOverlay {
     constructor() {
@@ -33,15 +43,16 @@ class CreatePatientOverlay extends PatientOverlay {
             right: MARGIN, top: ['prev()', MARGIN], bottom: MARGIN,
             text: 'Erstellen'
         }).on({
-            select: () => {
-                app_1.createPatient(this.find(tabris_1.TextInput).filter('#nameInput').first().text, this.find(tabris_1.TextInput).filter('#dateInput').first().text);
-                this.callback();
-                this.dispose();
-            }
+            select: () => this.onAccept()
         }));
         this.apply({
             TextView: { font: 'bold 18px' }
         });
+    }
+    onAccept() {
+        app_1.createPatient(this.find(tabris_1.TextInput).filter('#nameInput').first().text, this.find(tabris_1.TextInput).filter('#dateInput').first().text);
+        this.callback();
+        this.dispose();
     }
 }
 exports.CreatePatientOverlay = CreatePatientOverlay;
@@ -49,17 +60,14 @@ class ModifyPatientOverlay extends PatientOverlay {
     constructor(index) {
         let patient = app_1.globalDataObject.patients[index];
         super(patient.name, patient.date);
+        this.index = index;
         this.append(new tabris_1.Button({
             right: MARGIN, top: ['prev()', MARGIN], bottom: MARGIN,
             text: 'Ändern'
         }).on({
-            select: () => {
-                app_1.modifyPatient(index, this.find(tabris_1.TextInput).filter('#nameInput').first().text, this.find(tabris_1.TextInput).filter('#dateInput').first().text);
-                this.callback();
-                this.dispose();
-            }
+            select: () => this.onAccept()
         }), new tabris_1.Button({
-            left: MARGIN, baseline: 'prev()', bottom: MARGIN,
+            left: MARGIN, bottom: MARGIN,
             text: 'Löschen'
         }).on({
             select: () => {
@@ -81,6 +89,11 @@ class ModifyPatientOverlay extends PatientOverlay {
         this.apply({
             TextView: { font: 'bold 18px' }
         });
+    }
+    onAccept() {
+        app_1.modifyPatient(this.index, this.find(tabris_1.TextInput).filter('#nameInput').first().text, this.find(tabris_1.TextInput).filter('#dateInput').first().text);
+        this.callback();
+        this.dispose();
     }
 }
 exports.ModifyPatientOverlay = ModifyPatientOverlay;

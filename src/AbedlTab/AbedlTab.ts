@@ -1,5 +1,5 @@
 import { ui, Button, Composite, CollectionView, Tab, TextView, TextInput, ScrollView, Widget, TextViewProperties, TextInputProperties, device, CollectionViewProperties, AlertDialog } from 'tabris';
-import { abedlTexts, globalDataObject, storeData } from '../app';
+import { globalDataObject, storeData } from '../app';
 import { PatientData, AbedlSectionIndex, AbedlTable, getEntries } from '../PatientData';
 import AddAbedlEntryOverlay from '../AddAbedlEntryOverlay';
 import { omit } from '../util'
@@ -7,6 +7,7 @@ import HeadingCell from "./Cells/HeadingCell";
 import SectionHeadingCell from "./Cells/SectionHeadingCell";
 import AbedlEntryCell from "./Cells/AbedlEntryCell";
 import { LIST_SUBELEMENT_COLOR, LIGHT_GRAY_COLOR } from "../constants";
+import { abedlTexts } from "../ABEDLTexts";
 
 
 const CHAPTER_TITLE = 'chapterTitle';
@@ -178,7 +179,7 @@ export default class AbedlTab extends Tab {
       cell.set({
         layoutData: { left: descriptor.abedlIndex.type === 'notes' ? 10 : 15, centerY: 0 },
         descriptor,
-        text: descriptor.abedlIndex.type === 'notes' ? 'Notizen' : (descriptor.abedlIndex.type === 'problems' ? 'Probleme' : descriptor.abedlIndex.type === 'ressources' ? 'Ressourcen' : 'stuff'),
+        text: descriptor.abedlIndex.type === 'notes' ? 'Notizen' : (descriptor.abedlIndex.type === 'problems' ? 'Probleme' : descriptor.abedlIndex.type === 'ressources' ? 'Ressourcen' : 'Maßnahmen'),
         font: 'bold 18px'
       });
     } else if (cell instanceof AbedlEntryCell) {
@@ -204,17 +205,17 @@ export default class AbedlTab extends Tab {
     let entry = getEntries(this.patient.abedlTable, section)[index];
     let inDatabase = (getEntries(globalDataObject.abedlEntries, section).indexOf(entry)) !== -1;
     let buttons: any = {
-      ok: 'abbrechen',
-      cancel: 'löschen',
+      ok: 'Löschen',
+      neutral: 'Abbrechen',
     };
-    if (!inDatabase) buttons.neutral = 'in Datenbank';
+    if (!inDatabase) buttons.cancel = 'in Datenbank';
     new AlertDialog({
       title: 'Abedl Eintrag',
       message: entry,
       buttons
     }).on({
-      closeCancel: () => this.deleteAbedlEntry(section, index),
-      closeNeutral: () => this.saveAbedlEntry(section, index)
+      closeOk: () => this.deleteAbedlEntry(section, index),
+      closeCancel: () => this.saveAbedlEntry(section, index)
     }).open();
   }
 

@@ -2,7 +2,7 @@ import FloatingWindow from "../FloatingWindow";
 import { Medication, Perscription, PerscriptionTimes } from "../PatientData";
 import { Composite, CompositeProperties, TextView, TextInput, ToggleButton, Picker, Button, ScrollView, device } from "tabris/tabris";
 import { LIST_ELEMENT_COLOR, LIST_SUBELEMENT_COLOR, HIGHLIGHT_COLOR, LIST_ELEMENT_FONT, LIST_SUBELEMENT_FONT, FADED_HIGHLIGHT_COLOR, LIGHT_GRAY_COLOR } from "../constants";
-import { globalDataObject, storeData } from "../app";
+import { globalDataObject, storeData, getMedication } from "../app";
 import { omit } from "../util";
 import CreateMedicationOverlay from "./CreateMedicationOverlay";
 
@@ -25,9 +25,10 @@ export default class CreatePerscriptionOverlay extends FloatingWindow {
   private usages: TextToggleButton[];
 
   constructor(medOrPerscription: Medication | Perscription) {
+    console.log('constructor argument: ' + JSON.stringify(medOrPerscription));
     super({ windowWidth: 0.9, windowHeight: 0.7, centerX: 0, top: 2 * BIG_MARGIN });
-    if (medOrPerscription.hasOwnProperty('medIndex')) {
-      this.medication = globalDataObject.medications[(<Perscription>medOrPerscription).medId];
+    if (medOrPerscription.hasOwnProperty('medId')) {
+      this.medication = getMedication((<Perscription>medOrPerscription).medId)!;
     } else {
       this.medication = <Medication>medOrPerscription;
     }
@@ -329,7 +330,7 @@ class TimesDisplay extends Composite {
       new TextButton({ id: 'evening', text: '0' }),
       new TextView({ text: '-' }),
       new TextButton({ id: 'night', text: '0' }),
-      new TextToggleButton({ id: 'adLib', text: 'n.Bel.' }),
+      new TextToggleButton({ id: 'adLib', text: 'n.Bed.' }),
     );
     this.apply({
       'TextButton': { left: ['prev()', SMALL_MARGIN], top: 5, bottom: 5, pad: 5 },
