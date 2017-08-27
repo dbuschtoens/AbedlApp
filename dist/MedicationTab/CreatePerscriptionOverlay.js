@@ -40,7 +40,7 @@ class CreatePerscriptionOverlay extends FloatingWindow_1.default {
             this.dosages[0].selected = true;
         if (this.usages.length === 1)
             this.usages[0].selected = true;
-        if (medOrPerscription.hasOwnProperty('medIndex')) {
+        if (medOrPerscription.hasOwnProperty('medId')) {
             this.applyPerscriptionData(medOrPerscription);
         }
     }
@@ -48,6 +48,7 @@ class CreatePerscriptionOverlay extends FloatingWindow_1.default {
         this.callback = callback;
     }
     applyPerscriptionData(data) {
+        console.log('applying perscription data');
         let dosage = this.dosages.find(d => d.text === data.dosage);
         let usages = this.usages.filter(u => data.usage.some(usage => u.text === usage));
         if (dosage)
@@ -287,6 +288,7 @@ class TimesDisplay extends tabris_1.Composite {
         }));
     }
     applyTimes(times) {
+        console.log('applying times ' + JSON.stringify(times));
         this.apply({
             '#morning': { text: times.morning },
             '#noon': { text: times.noon },

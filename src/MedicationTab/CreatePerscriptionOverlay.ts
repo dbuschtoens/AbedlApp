@@ -47,7 +47,7 @@ export default class CreatePerscriptionOverlay extends FloatingWindow {
     this.registerEvents();
     if (this.dosages.length === 1) this.dosages[0].selected = true;
     if (this.usages.length === 1) this.usages[0].selected = true;
-    if (medOrPerscription.hasOwnProperty('medIndex')) {
+    if (medOrPerscription.hasOwnProperty('medId')) {
       this.applyPerscriptionData(<Perscription>medOrPerscription);
     }
   }
@@ -57,6 +57,7 @@ export default class CreatePerscriptionOverlay extends FloatingWindow {
   }
 
   private applyPerscriptionData(data: Perscription) {
+    console.log('applying perscription data');
     let dosage = this.dosages.find(d => d.text === data.dosage);
     let usages = this.usages.filter(u => data.usage.some(usage => u.text === usage));
     if (dosage) dosage.selected = true;
@@ -369,6 +370,7 @@ class TimesDisplay extends Composite {
   }
 
   public applyTimes(times: PerscriptionTimes) {
+    console.log('applying times ' + JSON.stringify(times));
     this.apply({
       '#morning': { text: times.morning },
       '#noon': { text: times.noon },
