@@ -60,9 +60,10 @@ class MedicationTab extends tabris_1.Tab {
         });
     }
     promptDeletePerscription(index) {
+        let med = app_1.getMedication(this.perscriptions[index].medId);
         new tabris_1.AlertDialog({
             title: 'Medikament entfernen?',
-            message: app_1.globalDataObject.medications[this.perscriptions[index].medId].name + ' ' + this.perscriptions[index].dosage,
+            message: med.name + ' ' + this.perscriptions[index].dosage,
             buttons: { ok: 'Ja', cancel: 'Nein' }
         }).on({
             closeOk: () => {

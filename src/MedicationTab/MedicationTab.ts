@@ -3,7 +3,7 @@ import { PatientData, Perscription } from "../PatientData";
 import MedicationCell from "./MedicationCell";
 import { FADED_HIGHLIGHT_COLOR, HIGHLIGHT_COLOR } from "../constants";
 import AddPerscriptionOverlay from "./AddPerscriptionOverlay";
-import { globalDataObject, storeData } from "../app";
+import { globalDataObject, storeData, getMedication } from "../app";
 import CreatePerscriptionOverlay from "./CreatePerscriptionOverlay";
 
 const DIVIDER = 'divider';
@@ -75,9 +75,10 @@ export default class MedicationTab extends Tab {
   }
 
   private promptDeletePerscription(index: number) {
+    let med = getMedication(this.perscriptions[index].medId);
     new AlertDialog({
       title: 'Medikament entfernen?',
-      message: globalDataObject.medications[this.perscriptions[index].medId].name + ' ' + this.perscriptions[index].dosage,
+      message: med!.name + ' ' + this.perscriptions[index].dosage,
       buttons: { ok: 'Ja', cancel: 'Nein' }
     }).on({
       closeOk: () => {

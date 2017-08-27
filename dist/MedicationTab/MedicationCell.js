@@ -42,17 +42,17 @@ class MedicationCell extends tabris_1.Composite {
     applyLayout() {
         this.apply({
             '#title': {
-                layoutData: { left: MARGIN, top: MARGIN },
+                layoutData: { left: MARGIN, right: MARGIN, top: MARGIN },
                 font: 'bold 20px',
                 textColor: constants_1.LIST_ELEMENT_COLOR
             },
             '#dosage': {
-                layoutData: { left: ['prev()', 10], baseline: 'prev()' },
+                layoutData: { top: 'prev()', left: MARGIN, right: MARGIN },
                 font: 'bold 20px',
                 textColor: constants_1.LIST_SUBELEMENT_COLOR
             },
             '#times': {
-                layoutData: { top: 'prev()', left: MARGIN },
+                layoutData: { top: 'prev()', left: MARGIN, right: MARGIN },
                 font: '18px',
                 textColor: constants_1.LIST_ELEMENT_COLOR
             },
