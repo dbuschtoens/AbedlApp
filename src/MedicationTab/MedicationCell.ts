@@ -52,17 +52,17 @@ export default class MedicationCell extends Composite {
   private applyLayout() {
     this.apply({
       '#title': {
-        layoutData: { left: MARGIN, top: MARGIN },
+        layoutData: { left:MARGIN, right: MARGIN, top: MARGIN },
         font: 'bold 20px',
         textColor: LIST_ELEMENT_COLOR
       },
       '#dosage': {
-        layoutData: { left: ['prev()', 10], baseline: 'prev()' },
+        layoutData: { top: 'prev()', left:MARGIN, right: MARGIN },
         font: 'bold 20px',
         textColor: LIST_SUBELEMENT_COLOR
       },
       '#times': {
-        layoutData: { top: 'prev()', left: MARGIN },
+        layoutData: { top: 'prev()', left:MARGIN, right: MARGIN },
         font: '18px',
         textColor: LIST_ELEMENT_COLOR
       },

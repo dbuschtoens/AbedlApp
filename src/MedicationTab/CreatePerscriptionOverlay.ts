@@ -66,7 +66,7 @@ export default class CreatePerscriptionOverlay extends FloatingWindow {
 
   private _onAccept() {
     if (this.verify()) {
-      let medId = globalDataObject.medications.indexOf(this.medication);
+      let medId = this.medication.id;
       let usage = this.usages.filter(u => u.selected).map(u => u.text);
       let dosage = this.dosages.find(d => d.selected)!.text;
 

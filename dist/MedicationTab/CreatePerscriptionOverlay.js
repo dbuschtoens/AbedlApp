@@ -57,7 +57,7 @@ class CreatePerscriptionOverlay extends FloatingWindow_1.default {
     }
     _onAccept() {
         if (this.verify()) {
-            let medId = app_1.globalDataObject.medications.indexOf(this.medication);
+            let medId = this.medication.id;
             let usage = this.usages.filter(u => u.selected).map(u => u.text);
             let dosage = this.dosages.find(d => d.selected).text;
             let times = this.find(TimesDisplay).first().getTimes();
