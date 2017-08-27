@@ -35,7 +35,7 @@ export interface PerscriptionTimes {
 export interface Perscription {
   medId: number,
   dosage: string,
-  usage: string
+  usage: string[],
   times: PerscriptionTimes
 }
 

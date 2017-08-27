@@ -49,24 +49,17 @@ class CreatePerscriptionOverlay extends FloatingWindow_1.default {
     }
     applyPerscriptionData(data) {
         let dosage = this.dosages.find(d => d.text === data.dosage);
-        let usage = this.usages.find(u => u.text === data.usage);
+        let usages = this.usages.filter(u => data.usage.some(usage => u.text === usage));
         if (dosage)
             dosage.selected = true;
-        if (usage)
-            usage.selected = true;
+        usages.forEach(usage => usage.selected = true);
         this.find(TimesDisplay).first().applyTimes(data.times);
     }
     _onAccept() {
         if (this.verify()) {
             let medId = app_1.globalDataObject.medications.indexOf(this.medication);
-            let selectedDoseage = this.dosages.find(d => d.selected);
-            let selectedUsage = this.usages.find(u => u.selected);
-            let dosage = '';
-            let usage = '';
-            if (selectedDoseage)
-                dosage = selectedDoseage.text;
-            if (selectedUsage)
-                usage = selectedUsage.text;
+            let usage = this.usages.filter(u => u.selected).map(u => u.text);
+            let dosage = this.dosages.find(d => d.selected).text;
             let times = this.find(TimesDisplay).first().getTimes();
             this.callback({ medId, dosage, usage, times });
             this.dispose();
@@ -112,7 +105,6 @@ class CreatePerscriptionOverlay extends FloatingWindow_1.default {
         }
         for (let i = 0; i < this.usages.length; i++) {
             this.usages[i].text = this.medication.usages[i];
-            this.usages[i].group = this.usages;
         }
     }
     applyStyle() {

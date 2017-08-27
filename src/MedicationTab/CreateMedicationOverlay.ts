@@ -9,6 +9,7 @@ const BIG_MARGIN = 20;
 const MARGIN = 10;
 const SMALL_MARGIN = 10;
 const SEND_ICON = '✔️'
+const DELETE_ICON = '❌'
 
 const LABEL_FONT = 'bold 18px';
 const ADD_FONT = 'bold 28px';
@@ -116,7 +117,7 @@ export default class CreateMedicationOverlay extends FloatingWindow {
       new TextInput({ id: 'sideEffectsInput', type: 'multiline' }),
       new TextView({ id: 'counterSignsLabel' }),
       new TextInput({ id: 'counterSignsInput', type: 'multiline' }),
-      new Composite({id: 'filler'})
+      new Composite({ id: 'filler' })
     );
     this.createDosageButtons();
     this.createUsageButtons();
@@ -201,16 +202,39 @@ export default class CreateMedicationOverlay extends FloatingWindow {
   }
 
   private registerEvents() {
-    this.find('#addDosageButton').first().on({ select: () => this.promptDosageText() });
+    this.find('#addDosageButton').first().on({ select: () => this.promptDosageText('') });
     this.find('#addFormButton').first().on({
-      select: () => this.promptFormText(),
+      select: () => this.promptFormText(''),
       longpress: ({ state }) => {
         if (state !== 'end') {
           this.promptRemoveFormText();
         }
       }
     });
-    this.find('#addUsageButton').first().on({ select: () => this.promptUsageText() });
+    this.find('#addUsageButton').first().on({ select: () => this.promptUsageText('') });
+  }
+
+  private promptUsageText(text: string) {
+    new AddTextWindow(text)
+      .onComplete((t) => {
+        if (text) {
+          this.modifyUsage(text, t);
+        } else {
+          this.addUsage(t)
+        }
+      }).onDelete((t) => this.findAndDeleteUsage(t));
+  }
+
+  private promptFormText(text: string) {
+    new AddTextWindow(text)
+      .onComplete((t) => {
+        if (text) {
+
+        } else {
+          this.addForm(t);
+        }
+      })
+      .onDelete((t) => this.promptRemoveFormText());
   }
 
   private promptRemoveFormText() {
@@ -232,15 +256,7 @@ export default class CreateMedicationOverlay extends FloatingWindow {
     }).open();
   }
 
-  private promptUsageText() {
-    new AddTextWindow().onComplete((text) => this.addUsage(text));
-  }
-
-  private promptFormText() {
-    new AddTextWindow().onComplete((text) => this.addForm(text));
-  }
-
-  private promptDosageText() {
+  private promptDosageText(text: string) {
     new AddDosageWindow().onComplete((text) => this.addDosage(text));
   }
 
@@ -274,33 +290,53 @@ export default class CreateMedicationOverlay extends FloatingWindow {
     this.applyLayout();
   }
 
+  private findAndDeleteUsage(text: string) {
+    let widget = this.usages.find(u => u.text === text);
+    if (widget) {
+      this.deleteElement(this.medUsages, this.usages, widget);
+    } else {
+      console.error(text + ' wurde nicht gefunden, nichts wurde gelöscht');
+    }
+  }
+
+  private modifyUsage(old: string, notOld: string) {
+    let widget = this.usages.find(u => u.text === old);
+    if (widget) {
+      this.medUsages[this.medUsages.indexOf(old)] = notOld;
+      widget.text = notOld;
+      storeData();
+    } else {
+      console.error(old + ' wurde nicht gefunden, nichts wurde gelöscht');
+    }
+  }
+
   private promptDeleteElement(globalData: string[], widgets: TextButton[], element: TextButton) {
     new AlertDialog({
       title: 'Eintrag löschen?',
       message: element.text,
       buttons: { ok: 'ja', cancel: 'nein' }
     }).on({
-      closeOk: () => {
-        let index = globalData.indexOf(element.text);
-        if (index !== -1) {
-          globalData.splice(index, 1);
-        }
-        widgets.splice(widgets.indexOf(element), 1);
-        element.dispose();
-        this.applyLayout();
-        storeData();
-      }
+      closeOk: () => this.deleteElement(globalData, widgets, element)
     }).open();
+  }
+
+  private deleteElement(globalData: string[], widgets: TextButton[], element: TextButton) {
+    let index = globalData.indexOf(element.text);
+    if (index !== -1) {
+      globalData.splice(index, 1);
+    }
+    widgets.splice(widgets.indexOf(element), 1);
+    element.dispose();
+    this.applyLayout();
+    storeData();
   }
 
   private addUsage(text: string) {
     let newUsage: TextButton = new TextButton({ class: 'usageButton' }).on({ select: () => console.error(newUsage.text) });
     newUsage.text = text;
     newUsage.on({
-      longpress: ({ state }) => {
-        if (state !== 'end') {
-          this.promptDeleteElement(this.medUsages, this.usages, newUsage)
-        }
+      tap: () => {
+        this.promptUsageText(text)
       }
     })
     newUsage.insertBefore(this.find('#addUsageButton').first());
@@ -321,23 +357,29 @@ export default class CreateMedicationOverlay extends FloatingWindow {
 class AddTextWindow extends FloatingWindow {
 
   private callback: (text: string) => void;
+  private delCallback: (test: string) => void;
 
-  constructor(message?: string) {
+  constructor(text: string) {
     super({ centerX: 0, centerY: 0, windowWidth: 0.9 });
     this.append(
-      new TextInput({
-        left: SMALL_MARGIN, right: 70, top: SMALL_MARGIN, type: 'multiline'
-      }).on({
-        accept: () => this.onSelect()
-      }),
       new Button({
-        left: ['prev()', SMALL_MARGIN], top: SMALL_MARGIN, bottom: SMALL_MARGIN, right: SMALL_MARGIN,
+        right: ['prev()', SMALL_MARGIN], top: SMALL_MARGIN, bottom: SMALL_MARGIN, width: 50,
         text: SEND_ICON, textColor: HIGHLIGHT_COLOR
       }).on({
         select: () => this.onSelect()
-      })
+      }),
+      new Button({
+        right: ['prev()', 0], top: SMALL_MARGIN, bottom: SMALL_MARGIN, width: 50,
+        text: DELETE_ICON, textColor: HIGHLIGHT_COLOR
+      }).on({
+        select: () => this._onDelete()
+      }),
+      new TextInput({
+        left: SMALL_MARGIN, top: SMALL_MARGIN, right: ['prev()', SMALL_MARGIN], type: 'multiline', text
+      }).on({
+        accept: () => this.onSelect()
+      }),
     )
-    if (message) this.find(TextInput).first().message = message;
     this.once({ resize: () => this.find(TextInput).first().focused = true });
   }
 
@@ -346,8 +388,18 @@ class AddTextWindow extends FloatingWindow {
     return this;
   }
 
+  public onDelete(callback: (test: string) => void) {
+    this.delCallback = callback;
+    return this;
+  }
+
   private onSelect() {
     this.callback(this.find(TextInput).first().text);
+    this.dispose();
+  }
+
+  private _onDelete() {
+    this.delCallback(this.find(TextInput).first().text);
     this.dispose();
   }
 

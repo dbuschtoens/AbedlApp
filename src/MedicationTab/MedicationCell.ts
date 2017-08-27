@@ -27,9 +27,8 @@ export default class MedicationCell extends Composite {
       this.apply({
         '#title': { text: med.name },
         '#dosage': { text: perscription.dosage },
-        '#agent': { text: med.agent },
+        // '#agent': { text: med.agent },
         '#times': { text: this.createTimeText(perscription.times) },
-        '#usage': { text: perscription.usage }
       });
     } else {
       console.error('perscription has invalid medId');
@@ -46,10 +45,7 @@ export default class MedicationCell extends Composite {
       new TextView({ id: 'title' }),
       new TextView({ id: 'dosage' }),
       new TextView({ id: 'times' }),
-      new TextView({ id: 'agent' }),
-      new Composite({ id: 'usageContainer' }).append(
-        new TextView({ id: 'usage' })
-      )
+      // new TextView({ id: 'agent' }),
     );
   }
 
@@ -66,23 +62,15 @@ export default class MedicationCell extends Composite {
         textColor: LIST_SUBELEMENT_COLOR
       },
       '#times': {
-        layoutData: { baseline: 'prev()', right: 2 * MARGIN },
+        layoutData: { top: 'prev()', left: MARGIN },
         font: '18px',
         textColor: LIST_ELEMENT_COLOR
       },
-      '#agent': {
-        layoutData: { left: MARGIN, top: ['prev()', INNER_MARGIN] },
-        font: 'bold 18px',
-        textColor: LIST_SUBELEMENT_COLOR
-      },
-      '#usageContainer': {
-        layoutData: { left: ['prev()', MARGIN], top: ['#times', INNER_MARGIN], right: MARGIN },
-        cornerRadius: 3, background: TEXT_BUTTON_BACKGROUND
-      },
-      '#usage': {
-        left: PADDING, right: PADDING, top: PADDING, bottom: PADDING,
-        font: '15px',
-      }
+      // '#agent': {
+      //   layoutData: { left: MARGIN, top: ['prev()', INNER_MARGIN] },
+      //   font: 'bold 18px',
+      //   textColor: LIST_SUBELEMENT_COLOR
+      // },
 
     });
   }

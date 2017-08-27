@@ -46,19 +46,24 @@ export default class SyncPage extends Page {
             break;
           case 'ackData':
             this.appendToChat('Daten empfangen')
+            packet.data.patients.forEach((patient: any) => patient.medication.forEach((perscription: any) => {
+              if (typeof perscription.usage === 'string') {
+                perscription.usage = [perscription.usage];
+              }
+            }));
             storeData(packet.data);
             this.appendToChat('Daten gespeichert')
             break;
           case 'error':
             this.appendToChat('Server Error!');
             this.appendToChat(JSON.stringify(packet.data));
-          break;
+            break;
           case 'noData':
             this.appendToChat('Keine daten gefunden');
-          break;
+            break;
           default:
             console.error('Unknown server command: ' + packet.command);
-            this.appendToChat('Error: Unbekannte Servernachricht "' + packet.command +'" empfangen!!');
+            this.appendToChat('Error: Unbekannte Servernachricht "' + packet.command + '" empfangen!!');
             break;
         }
       } else if (event.data instanceof ArrayBuffer) {
@@ -107,7 +112,7 @@ export default class SyncPage extends Page {
 
   private sendMessage(command: string, data?: any) {
     data = data || {};
-    let packet: Packet = {command, data};
+    let packet: Packet = { command, data };
     this.socket.send(JSON.stringify(packet));
   }
 

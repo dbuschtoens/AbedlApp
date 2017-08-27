@@ -136,10 +136,16 @@ let action = new tabris_1.Action({
 loadData();
 loadMainPage();
 function loadData() {
-    console.log('loadingData');
+    console.log('loading Data');
     let storedData = localStorage.getItem('data');
     if (storedData) {
-        exports.globalDataObject = JSON.parse(storedData);
+        let data = JSON.parse(storedData);
+        data.patients.forEach((patient) => patient.medication.forEach((perscription) => {
+            if (typeof perscription.usage === 'string') {
+                perscription.usage = [perscription.usage];
+            }
+        }));
+        exports.globalDataObject = data;
     }
     else {
         exports.globalDataObject = initData();

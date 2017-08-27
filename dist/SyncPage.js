@@ -33,6 +33,11 @@ class SyncPage extends tabris_1.Page {
                         break;
                     case 'ackData':
                         this.appendToChat('Daten empfangen');
+                        packet.data.patients.forEach((patient) => patient.medication.forEach((perscription) => {
+                            if (typeof perscription.usage === 'string') {
+                                perscription.usage = [perscription.usage];
+                            }
+                        }));
                         app_1.storeData(packet.data);
                         this.appendToChat('Daten gespeichert');
                         break;

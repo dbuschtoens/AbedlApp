@@ -9,6 +9,7 @@ const BIG_MARGIN = 20;
 const MARGIN = 10;
 const SMALL_MARGIN = 10;
 const SEND_ICON = '✔️';
+const DELETE_ICON = '❌';
 const LABEL_FONT = 'bold 18px';
 const ADD_FONT = 'bold 28px';
 const SELECTED_BUTTON_BACKGROUND = '#ffbb56';
@@ -154,16 +155,38 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
         });
     }
     registerEvents() {
-        this.find('#addDosageButton').first().on({ select: () => this.promptDosageText() });
+        this.find('#addDosageButton').first().on({ select: () => this.promptDosageText('') });
         this.find('#addFormButton').first().on({
-            select: () => this.promptFormText(),
+            select: () => this.promptFormText(''),
             longpress: ({ state }) => {
                 if (state !== 'end') {
                     this.promptRemoveFormText();
                 }
             }
         });
-        this.find('#addUsageButton').first().on({ select: () => this.promptUsageText() });
+        this.find('#addUsageButton').first().on({ select: () => this.promptUsageText('') });
+    }
+    promptUsageText(text) {
+        new AddTextWindow(text)
+            .onComplete((t) => {
+            if (text) {
+                this.modifyUsage(text, t);
+            }
+            else {
+                this.addUsage(t);
+            }
+        }).onDelete((t) => this.findAndDeleteUsage(t));
+    }
+    promptFormText(text) {
+        new AddTextWindow(text)
+            .onComplete((t) => {
+            if (text) {
+            }
+            else {
+                this.addForm(t);
+            }
+        })
+            .onDelete((t) => this.promptRemoveFormText());
     }
     promptRemoveFormText() {
         let index = this.find(tabris_1.Picker).first().selectionIndex;
@@ -183,13 +206,7 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
             }
         }).open();
     }
-    promptUsageText() {
-        new AddTextWindow().onComplete((text) => this.addUsage(text));
-    }
-    promptFormText() {
-        new AddTextWindow().onComplete((text) => this.addForm(text));
-    }
-    promptDosageText() {
+    promptDosageText(text) {
         new AddDosageWindow().onComplete((text) => this.addDosage(text));
     }
     createDosageButtons() {
@@ -219,32 +236,51 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
         this.applyStyle();
         this.applyLayout();
     }
+    findAndDeleteUsage(text) {
+        let widget = this.usages.find(u => u.text === text);
+        if (widget) {
+            this.deleteElement(this.medUsages, this.usages, widget);
+        }
+        else {
+            console.error(text + ' wurde nicht gefunden, nichts wurde gelöscht');
+        }
+    }
+    modifyUsage(old, notOld) {
+        let widget = this.usages.find(u => u.text === old);
+        if (widget) {
+            this.medUsages[this.medUsages.indexOf(old)] = notOld;
+            widget.text = notOld;
+            app_1.storeData();
+        }
+        else {
+            console.error(old + ' wurde nicht gefunden, nichts wurde gelöscht');
+        }
+    }
     promptDeleteElement(globalData, widgets, element) {
         new tabris_1.AlertDialog({
             title: 'Eintrag löschen?',
             message: element.text,
             buttons: { ok: 'ja', cancel: 'nein' }
         }).on({
-            closeOk: () => {
-                let index = globalData.indexOf(element.text);
-                if (index !== -1) {
-                    globalData.splice(index, 1);
-                }
-                widgets.splice(widgets.indexOf(element), 1);
-                element.dispose();
-                this.applyLayout();
-                app_1.storeData();
-            }
+            closeOk: () => this.deleteElement(globalData, widgets, element)
         }).open();
+    }
+    deleteElement(globalData, widgets, element) {
+        let index = globalData.indexOf(element.text);
+        if (index !== -1) {
+            globalData.splice(index, 1);
+        }
+        widgets.splice(widgets.indexOf(element), 1);
+        element.dispose();
+        this.applyLayout();
+        app_1.storeData();
     }
     addUsage(text) {
         let newUsage = new TextButton({ class: 'usageButton' }).on({ select: () => console.error(newUsage.text) });
         newUsage.text = text;
         newUsage.on({
-            longpress: ({ state }) => {
-                if (state !== 'end') {
-                    this.promptDeleteElement(this.medUsages, this.usages, newUsage);
-                }
+            tap: () => {
+                this.promptUsageText(text);
             }
         });
         newUsage.insertBefore(this.find('#addUsageButton').first());
@@ -260,28 +296,39 @@ class CreateMedicationOverlay extends FloatingWindow_1.default {
 }
 exports.default = CreateMedicationOverlay;
 class AddTextWindow extends FloatingWindow_1.default {
-    constructor(message) {
+    constructor(text) {
         super({ centerX: 0, centerY: 0, windowWidth: 0.9 });
-        this.append(new tabris_1.TextInput({
-            left: SMALL_MARGIN, right: 70, top: SMALL_MARGIN, type: 'multiline'
-        }).on({
-            accept: () => this.onSelect()
-        }), new tabris_1.Button({
-            left: ['prev()', SMALL_MARGIN], top: SMALL_MARGIN, bottom: SMALL_MARGIN, right: SMALL_MARGIN,
+        this.append(new tabris_1.Button({
+            right: ['prev()', SMALL_MARGIN], top: SMALL_MARGIN, bottom: SMALL_MARGIN, width: 50,
             text: SEND_ICON, textColor: constants_1.HIGHLIGHT_COLOR
         }).on({
             select: () => this.onSelect()
+        }), new tabris_1.Button({
+            right: ['prev()', 0], top: SMALL_MARGIN, bottom: SMALL_MARGIN, width: 50,
+            text: DELETE_ICON, textColor: constants_1.HIGHLIGHT_COLOR
+        }).on({
+            select: () => this._onDelete()
+        }), new tabris_1.TextInput({
+            left: SMALL_MARGIN, top: SMALL_MARGIN, right: ['prev()', SMALL_MARGIN], type: 'multiline', text
+        }).on({
+            accept: () => this.onSelect()
         }));
-        if (message)
-            this.find(tabris_1.TextInput).first().message = message;
         this.once({ resize: () => this.find(tabris_1.TextInput).first().focused = true });
     }
     onComplete(callback) {
         this.callback = callback;
         return this;
     }
+    onDelete(callback) {
+        this.delCallback = callback;
+        return this;
+    }
     onSelect() {
         this.callback(this.find(tabris_1.TextInput).first().text);
+        this.dispose();
+    }
+    _onDelete() {
+        this.delCallback(this.find(tabris_1.TextInput).first().text);
         this.dispose();
     }
 }
