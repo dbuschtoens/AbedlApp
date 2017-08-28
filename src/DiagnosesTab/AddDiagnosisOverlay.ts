@@ -19,7 +19,11 @@ export default class AddDiagnosisOverlay extends FloatingWindow {
 
   constructor() {
     super({ windowWidth: 0.8, windowHeight: 0.8, centerX: 0, top: MARGIN });
-    this.filteredSuggestions = globalDataObject.diagnoses;
+    this.filteredSuggestions = globalDataObject.diagnoses.sort(function (a, b) {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
     let itemCount = 2 * (1 + this.filteredSuggestions.length) - 1;
     this.append(
       this.textInput = new TextInput({
