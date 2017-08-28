@@ -12,7 +12,13 @@ const SEND_ICON = '✔️';
 class AddPerscriptionOverlay extends FloatingWindow_1.default {
     constructor() {
         super({ windowWidth: 0.8, windowHeight: 0.8, centerX: 0, top: MARGIN });
-        this.filteredSuggestions = app_1.globalDataObject.medications;
+        this.filteredSuggestions = app_1.globalDataObject.medications.sort(function (a, b) {
+            if (a.name < b.name)
+                return -1;
+            if (a.name > b.name)
+                return 1;
+            return 0;
+        });
         let itemCount = 2 * (1 + this.filteredSuggestions.length) - 1;
         this.append(this.textInput = new tabris_1.TextInput({
             left: MARGIN, right: MARGIN, top: MARGIN,
