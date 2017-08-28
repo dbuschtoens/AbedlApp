@@ -10,7 +10,15 @@ const DIVIDER = 'divider';
 class MedicationTab extends tabris_1.Tab {
     constructor(perscriptions) {
         super({ title: 'Medikamente' });
-        this.perscriptions = perscriptions;
+        this.perscriptions = perscriptions.sort(function (a, b) {
+            let medA = app_1.getMedication(a.medId);
+            let medB = app_1.getMedication(b.medId);
+            if (medA.name < medB.name)
+                return -1;
+            if (medA.name > medB.name)
+                return 1;
+            return 0;
+        });
         let itemCount = 2 * (this.perscriptions.length + 1) - 1;
         this.collectionView = new tabris_1.CollectionView({
             layoutData: { left: 0, top: 0, bottom: 0, right: 0 },
@@ -77,6 +85,15 @@ class MedicationTab extends tabris_1.Tab {
     showAddPerscriptionOverlay() {
         new AddPerscriptionOverlay_1.default().onAccept(perscription => {
             this.perscriptions.push(perscription);
+            this.perscriptions.sort(function (a, b) {
+                let medA = app_1.getMedication(a.medId);
+                let medB = app_1.getMedication(b.medId);
+                if (medA.name < medB.name)
+                    return -1;
+                if (medA.name > medB.name)
+                    return 1;
+                return 0;
+            });
             app_1.storeData();
             let itemCount = 2 * (this.perscriptions.length + 1) - 1;
             this.collectionView.load(itemCount);

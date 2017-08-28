@@ -20,7 +20,13 @@ export default class MedicationTab extends Tab {
 
   constructor(perscriptions: Perscription[]) {
     super({ title: 'Medikamente' });
-    this.perscriptions = perscriptions;
+    this.perscriptions = perscriptions.sort(function (a, b) {
+      let medA = getMedication(a.medId);
+      let medB = getMedication(b.medId);
+      if (medA!.name < medB!.name) return -1;
+      if (medA!.name > medB!.name) return 1;
+      return 0;
+    });
     let itemCount = 2 * (this.perscriptions.length + 1) - 1;
     this.collectionView = new CollectionView({
       layoutData: { left: 0, top: 0, bottom: 0, right: 0 },
@@ -93,6 +99,13 @@ export default class MedicationTab extends Tab {
   private showAddPerscriptionOverlay() {
     new AddPerscriptionOverlay().onAccept(perscription => {
       this.perscriptions.push(perscription);
+      this.perscriptions.sort(function (a, b) {
+        let medA = getMedication(a.medId);
+        let medB = getMedication(b.medId);
+        if (medA!.name < medB!.name) return -1;
+        if (medA!.name > medB!.name) return 1;
+        return 0;
+      });
       storeData();
       let itemCount = 2 * (this.perscriptions.length + 1) - 1;
       this.collectionView.load(itemCount);
