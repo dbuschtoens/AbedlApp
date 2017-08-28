@@ -26,6 +26,10 @@ class CreateDiagnosisOverlay extends FloatingWindow_1.default {
                 let name = this.find(tabris_1.TextInput).filter('#nameInput').first().text;
                 let explanation = this.find(tabris_1.TextInput).filter('#explanationInput').first().text;
                 if (name !== '') {
+                    if (this.diagnosis) {
+                        this.diagnosis.name = name;
+                        this.diagnosis.explanation = explanation;
+                    }
                     let diag = this.diagnosis || app_1.createDiagnosis({ name, explanation });
                     if (diag) {
                         this.callback(diag.id);

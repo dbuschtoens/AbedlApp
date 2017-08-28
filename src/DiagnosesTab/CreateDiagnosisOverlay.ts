@@ -38,6 +38,10 @@ export default class CreateDiagnosisOverlay extends FloatingWindow {
         let name = this.find(TextInput).filter('#nameInput').first().text;
         let explanation = this.find(TextInput).filter('#explanationInput').first().text;
         if (name !== '') {
+          if (this.diagnosis) {
+            this.diagnosis.name = name;
+            this.diagnosis.explanation = explanation;
+          }
           let diag = this.diagnosis || createDiagnosis({name, explanation});
           if (diag) {
             this.callback(diag.id);
