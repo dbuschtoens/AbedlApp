@@ -11,7 +11,7 @@ interface Packet {
 
 export default class SyncPage extends Page {
 
-  private socket: WebSocket;
+  private url: String;
   private chatTextView: TextView;
   private inputContainer: Composite;
 
@@ -20,104 +20,23 @@ export default class SyncPage extends Page {
     this.createUI();
   }
 
-  private openWebsocket(url: string) {
-    this.socket = new WebSocket(url, 'chat-protocol');
-    this.registerSocketEvents();
-    this.once({
-      disappear: () => this.socket.close(1000)
-    })
-  }
-
-  private registerSocketEvents() {
-    this.socket.onopen = (event) => {
-      this.changeUI();
-      console.info('Connection opened: ' + JSON.stringify(event));
-      this.appendToChat('Verbunden.<br/>');
-      this.logWebSocketState();
-    };
-
-    this.socket.onmessage = (event) => {
-      console.info('Server message: ' + JSON.stringify(event));
-      if (typeof event.data === 'string') {
-        let packet: Packet = JSON.parse(event.data);
-        switch (packet.command) {
-          case 'dataRecieved':
-            this.appendToChat('Daten wurden hochgeladen');
-            break;
-          case 'ackData':
-            this.appendToChat('Daten empfangen')
-            packet.data.patients.forEach((patient: any) => patient.medication.forEach((perscription: any) => {
-              if (typeof perscription.usage === 'string') {
-                perscription.usage = [perscription.usage];
-              }
-            }));
-            storeData(packet.data);
-            this.appendToChat('Daten gespeichert')
-            break;
-          case 'error':
-            this.appendToChat('Server Error!');
-            this.appendToChat(JSON.stringify(packet.data));
-            break;
-          case 'noData':
-            this.appendToChat('Keine daten gefunden');
-            break;
-          default:
-            console.error('Unknown server command: ' + packet.command);
-            this.appendToChat('Error: Unbekannte Servernachricht "' + packet.command + '" empfangen!!');
-            break;
-        }
-      } else if (event.data instanceof ArrayBuffer) {
-        console.error('Fehlerhafte Daten empfangen!!');
-        this.appendToChat('Error: Fehlerhafte Daten empfangen!!');
-      }
-      this.logWebSocketState();
-    };
-
-    this.socket.onerror = (event) => {
-      console.info('Error: ' + JSON.stringify(event));
-      this.appendToChat('Error:' + JSON.stringify(event));
-      this.logWebSocketState();
-    };
-
-    this.socket.onclose = (event) => {
-      console.info('Close connection ' + JSON.stringify(event));
-      this.appendToChat('Verbindung geschlossen:' + JSON.stringify(event));
-      this.logWebSocketState();
-    };
-  }
-
-  private changeUI() {
-    this.inputContainer.find().dispose();
-
-    new Button({
-      right: 16, centerY: 0,
-      text: ' ' + UPLOAD_ICON + ' '
-    }).on('select', () => this.uploadData()).appendTo(this.inputContainer);
-
-    new Button({
-      left: 16, centerY: 0,
-      text: ' ' + DOWNLOAD_ICON + ' '
-    }).on('select', () => this.downloadData()).appendTo(this.inputContainer);
-  }
-
-  private downloadData() {
-    // this.appendToChat('Fordere daten an...');
-    // this.sendMessage('requestData');
-  }
-
-  private uploadData() {
+  private uploadData(url: String) {
     let file = fs.filesDir + '/AbedlData.json';
     fs.writeFile(file, JSON.stringify(globalDataObject));
     console.info("Wrote file " + file);
     this.appendToChat("Gespeichert in Datei " + file);
+    console.log(" uploading file ")
+    let xhr = new window.XMLHttpRequest();
+    xhr.onreadystatechange = () => {
+      console.log(" xhr readyState: " + READY_STATES[xhr.readyState]);
+    };
+    xhr.onprogress = (e) => {
+      console.log(" xhr progress: " + JSON.stringify(e));
+    }
+    xhr.open('POST', url);
+    xhr.send(JSON.stringify(globalDataObject));
     // this.appendToChat('Sichere daten...');
     // this.sendMessage('storeData', globalDataObject)
-  }
-
-  private sendMessage(command: string, data?: any) {
-    data = data || {};
-    let packet: Packet = { command, data };
-    this.socket.send(JSON.stringify(packet));
   }
 
   private createUI() {
@@ -127,7 +46,7 @@ export default class SyncPage extends Page {
     }).appendTo(this);
 
     let urlInput = new TextInput({
-      left: 16, right: ['#connectButton', 16], centerY: 0,
+      left: 16, right: ['#sendButton', 16], centerY: 0,
       message: 'url'
     }).appendTo(this.inputContainer);
 
@@ -135,13 +54,12 @@ export default class SyncPage extends Page {
     if (url) urlInput.text = url;
 
     new Button({
-      id: 'connectButton',
+      id: 'sendButton',
       right: 16, width: 76, centerY: 0,
-      text: 'Verbinden'
+      text: 'Hochladen'
     }).on('select', () => {
       localStorage.setItem('url', urlInput.text);
-      this.openWebsocket('ws://' + urlInput.text + ':9000');
-      this.appendToChat('Verbinde...');
+      this.uploadData('http://' + urlInput.text + ':8082');
     }).appendTo(this.inputContainer);
 
     let scrollView = new ScrollView({
@@ -154,16 +72,6 @@ export default class SyncPage extends Page {
       left: 16, right: 16, top: 16,
       markupEnabled: true
     }).appendTo(scrollView);
-  }
-
-  private logWebSocketState() {
-    console.log(`WebSocket state:
-        url: ${this.socket.url}
-        readyState: ${this.socket.readyState}
-        protocol: ${this.socket.protocol}
-        extension: ${this.socket.extensions}
-        bufferedAmount: ${this.socket.bufferedAmount}
-        binaryType: ${this.socket.binaryType}`);
   }
 
   private appendToChat(text: string) {
