@@ -1,4 +1,4 @@
-import { Page, Composite, TextInput, Button, device, ScrollView, TextView } from "tabris/tabris";
+import { Page, Composite, TextInput, Button, device, ScrollView, TextView, fs } from "tabris/tabris";
 import { globalDataObject, storeData } from "./app";
 
 const DOWNLOAD_ICON = '🔻';
@@ -101,13 +101,17 @@ export default class SyncPage extends Page {
   }
 
   private downloadData() {
-    this.appendToChat('Fordere daten an...');
-    this.sendMessage('requestData');
+    // this.appendToChat('Fordere daten an...');
+    // this.sendMessage('requestData');
   }
 
   private uploadData() {
-    this.appendToChat('Sichere daten...');
-    this.sendMessage('storeData', globalDataObject)
+    let file = fs.filesDir + '/AbedlData.json';
+    fs.writeFile(file, JSON.stringify(globalDataObject));
+    console.info("Wrote file " + file);
+    this.appendToChat("Gespeichert in Datei " + file);
+    // this.appendToChat('Sichere daten...');
+    // this.sendMessage('storeData', globalDataObject)
   }
 
   private sendMessage(command: string, data?: any) {
