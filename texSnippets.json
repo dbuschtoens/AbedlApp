@@ -1,0 +1,131 @@
+{
+  "header": "\n  \\documentclass[a4paper,8pt,landscape]{article} %Dokumentengrösse auf A4 setzen\n  \n  \\usepackage[landscape, margin=1cm, includeheadfoot]{geometry}\n  \n  \n  \\usepackage[utf8x]{inputenc} %Umlaute in UTF8 kodierten Dateien richtig erkennen.\n  \n  \\usepackage[german]{babel} %Deutsche Schreibweise für Datum verwenden. Weiter werden deutsche Begriffe für z.B. das Inhaltsverzeichnis verwendet\n  \n  \\usepackage{lastpage} %Anzeigen der Gesamtseitenzahl ermöglichen\n  \n  \\usepackage{float}\n  \n  \\usepackage{amsmath}\n  \n  \\usepackage{fancyhdr}\n  \\pagestyle{headings}\n  \\fancyhf{}\n  \\renewcommand{\\headrulewidth}{0pt}\n  \n  \n  \\parindent 0pt %Einrücken von neuen Absätzen verhindern\n  \n  \\parskip 8pt %Abstand zwischen den Absätzen definieren\n  \n  \\usepackage{makecell}\n  \\usepackage{longtable}\n  \\renewcommand\\theadalign{cb}\n  \\renewcommand\\theadfont{\\bfseries}\n  \\renewcommand\\theadgape{\\Gape[4pt]}\n  \\renewcommand\\cellgape{\\Gape[4pt]}\n  ",
+  "titleToSection1": "\\date{} %kein Datum\n\n  \\newcommand\\Tstrut{\\rule{0pt}{2.6ex}}\n  \n  %----------------------------------------------------------------\n  \n  \\begin{document}\n  \n  \\maketitle\n  \\thispagestyle{empty} %Titel generieren. Auf der Titelseite soll keine Kopf- und Fusszeile erscheinen\n  \n  \n  \\tableofcontents %Inhaltsverzeichnis an dieser Stelle generieren und Anzeigen\n  \n  \\newpage\n  \n  %----------------------------------------------------------------\n  \n  \n  \n  \\section{ABEDL - Bogen }\n  \n  \\begin{tabular}{p{8cm} p{5cm} p{8cm} p{5cm}}\n    Name der Schülerin/des Schülers: & Madeleine Hiller &",
+  "tableHeader": "\n\n  \\begin{longtable}{|p{2.5cm}|p{3cm}|p{10cm}|p{10cm}|}\n    \\hline\n    \\thead{ABEDL} & \\thead{Bereiche} & \\thead{Probleme} & \\thead{Ressourcen}  \\\\\n  \n    \\hline\n  ",
+  "abedlSections": [
+    {
+      "name": "  1. Kommunizieren können",
+      "subsectionNames": [
+        "  1.1. \\newline\n  Konzentration, Erinnerungsvermögen, Orientierung &",
+        "  1.2. \\newline\n  Fähigkeit sich mündlich und schriftlich mitzuteilen &",
+        "  1.3. \\newline\n  Erkennen von verbaler und schriftlicher Kommunikation &",
+        "  1.4. \\newline\n  Wahrnehmungsfähigkeit ``Sehen und Gesichtsfeld'' &",
+        "  1.5. \\newline\n  Empfinden von Wärme, Kälte und Schmerz &",
+        "  1.6. \\newline\n  Mimik, Gestik &"
+      ]
+    },
+    {
+      "name": "  2. Sich bewegen können &",
+      "subsectionNames": [
+        "  2.1. \\newline\n  Stehen/Gleichgewicht &",
+        "  2.2. \\newline\n  Gehen &",
+        "  2.3. \\newline\n  Sitzen &",
+        "  2.4. \\newline\n  Bewegungen &",
+        "  2.5. \\newline\n  Feinmotorik &",
+        "  2.6. \\newline\n  Kontrakturenprophylaxe (aktiv, passiv) &",
+        "  2.7. \\newline\n  Gehhilfen, Prothesen und Lagerungshilfsmittel &"
+      ]
+    },
+    {
+      "name": "  3. Vitale Funktionen des Lebens aufrecht erhalten können &",
+      "subsectionNames": [
+        "  3.1. \\newline\n  Atmung &",
+        "  3.2. \\newline\n  Kreislauf &",
+        "  3.3. \\newline\n  Wärmeregulierung (Fieber, Transpiration, Frieren, Schwitzen) &"
+      ]
+    },
+    {
+      "name": "  4. Sich pflegen können &",
+      "subsectionNames": [
+        "  4.1. \\newline\n  Haut &",
+        "  4.2. \\newline\n  Fingernägel/Fußnägel &",
+        "  4.3. \\newline\n  Augen &",
+        "  4.4. \\newline\n  Mundschleimhaut &",
+        "  4.5. \\newline\n  Zähne &",
+        "  4.6. \\newline\n  Haare &",
+        "  4.7. \\newline\n  Körperpflege &",
+        "  4.8. \\newline\n  Baden/Duschen &",
+        "  4.9. \\newline\n  Selbstständigkeit fördern &"
+      ]
+    },
+    {
+      "name": "  5. Essen und Trinken können &",
+      "subsectionNames": [
+        "  5.1. \\newline\n  Menge der Nahrungsaufnahme &",
+        "  5.2. \\newline\n  Appetit und Geschmacksempfinden &",
+        "  5.3. \\newline\n  Art der Nahrungszubereitung &",
+        "  5.4. \\newline\n  Diäten, Sonderkost, parenterale Ernährung &",
+        "  5.5. \\newline\n  Trinkmenge &",
+        "  5.6. \\newline\n  Zahnstatus, Zahnfleisch, Zustand Zahnprothese &",
+        "  5.7. \\newline\n  Kauen, Schlucken &",
+        "  5.8. \\newline\n  Verträglichkeit von Speisen &",
+        "  5.9. \\newline\n  Konstitution (Größe, Gewicht) &",
+        "  5.10. \\newline\n  Lieblingsspeisen, Lieblingsgetränke, Alkohol &"
+      ]
+    },
+    {
+      "name": "  6. Ausscheiden können &",
+      "subsectionNames": [
+        "  6.1. \\newline\n  Inkontinenzproblemlösung &",
+        "  6.2. \\newline\n  Urinausscheidung (Menge, Rhythmus, Miktionsstörungen ...) &",
+        "  6.3. \\newline\n  Stuhlausscheidung (Menge, Rhythmus, Diarrhö, Obstipation ...) &",
+        "  6.4. \\newline\n  Schamverhalten &"
+      ]
+    },
+    {
+      "name": "  7. Sich kleiden können &",
+      "subsectionNames": [
+        "  7.1. \\newline\n  bevorzugte Kleidung &",
+        "  7.2. \\newline\n  Selbstständigkeit fördern &",
+        "  7.3. \\newline\n  Unterstützung beim An- und Ausziehen &"
+      ]
+    },
+    {
+      "name": "  8. Ruhen und schlafen können &",
+      "subsectionNames": [
+        "  8.1. \\newline\n  Schlaf-Wach-Rhythmus &",
+        "  8.2. \\newline\n  Unterstützung bei Schlafstörung &",
+        "  8.3. \\newline\n  Ruhepause, Schlafqualität, Schlafdauer, Schlafenszeiten &"
+      ]
+    },
+    {
+      "name": "  9. Sich beschäftigen können &",
+      "subsectionNames": [
+        "  9.1. \\newline\n  Hobbys &",
+        "  9.2. \\newline\n  Aktivitäten mit anderen Personen, z.B. Angehörige, Pflegepersonal &",
+        "  9.3. \\newline\n  Selbstständige Aktivität &"
+      ]
+    },
+    {
+      "name": "  10. Sich als Mann od. Frau fühlen \\& verhalten können &",
+      "subsectionNames": [
+        "10.1. \n\newline\n  Nimmt ihr Geschlecht an. Ist sich Ihrer Rolle bewusst &",
+        "10.2. \n\newline\n  Typische Geschlechtsmerkmale (Parfüms, Fußball, Haare usw.) &",
+        "10.3. \n\newline\n  Sexualleben &",
+        "10.4. \n\newline\n  Schamverhalten &"
+      ]
+    },
+    {
+      "name": "  11. Für eine sichere \\& fördernde Umgebung sorgen &",
+      "subsectionNames": [
+        "  11.1. \\newline\n  Räumliche Ausstattung (Anordnung der Einrichtungsgegenstände, Sturzprophylaxe &",
+        "  11.2. \\newline\n  Selbstpflegefähigkeit fördern &",
+        "  11.3. \\newline\n  Hilfsmittel zur Orientierung (Kalender, Radio, Zeitung, Radio, Fernseher) &",
+        "  11.4. \\newline\n  Bettseitenteil, Fixierungen usw. &",
+        "  11.5. \\newline\n  Betreuung, Geldgeschäfte &",
+        "  11.6. \\newline\n  Medizinische Versorgung (z.B. Medikamente) &"
+      ]
+    },
+    {
+      "name": "  12. Soziale Bereiche des Lebens sichern und gestalten können &",
+      "subsectionNames": [
+        "  12.1. \\newline\n  Soziale Kontakte &",
+        "  12.2. \\newline\n  örtliche Begebenheiten (Treppen, Stufen, Badezimmerausstattung) &"
+      ]
+    },
+    {
+      "name": "13. Mit existentiellen Erfahrungen des Lebens umgehen können &",
+      "subsectionNames": ["&"]
+    }
+  ]
+}
